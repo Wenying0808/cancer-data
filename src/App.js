@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
-import Navbar from './navbar';
-import Section from './section';
+import Navbar from './navbar/navbar';
+import Section from './section/section';
 import './App.css';
 
 

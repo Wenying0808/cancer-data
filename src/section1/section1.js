@@ -5,6 +5,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import WindowOutlinedIcon from '@mui/icons-material/WindowOutlined';
 import PublicOutlinedIcon from '@mui/icons-material/PublicOutlined';
+import section1Dataset from './section1data.csv';
 
 const Section1 = ({id, isActive}) => {
 
@@ -13,7 +14,7 @@ const Section1 = ({id, isActive}) => {
     const [section1Data, setSection1Data] = useState([]);
 
     useEffect(() => {
-        d3.csv("./bog_bodies.csv").then(function(data,error){
+        d3.csv(section1Dataset).then(function(data, error){
             if(error){
                 console.log("fetchdata", error);
             } else{
@@ -21,18 +22,6 @@ const Section1 = ({id, isActive}) => {
                 console.log("fetched data:", data);
             }
         });
-        let dataset;
-        
-        d3.json("https://cdn.freecodecamp.org/testable-projects-fcc/data/tree_map/movie-data.json").then(
-            (data, error) => {
-                if (error) {
-                    console.log("fetchjsondata", error);
-                }else{
-                    dataset = data;
-                    console.log("fetched json data", dataset);
-                }
-            }
-    );
     }, []);
 
     

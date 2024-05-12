@@ -1,12 +1,16 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useMemo} from "react";
 import * as d3 from "d3";
 import "../section/section.css";
+import "./section1_table.css";
 import section1Dataset from './section1data.csv';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import WindowOutlinedIcon from '@mui/icons-material/WindowOutlined';
 import PublicOutlinedIcon from '@mui/icons-material/PublicOutlined';
 import { Table, TableHead, TableRow, TableCell, TableBody, Box, Slider } from '@mui/material';
+import NorthIcon from '@mui/icons-material/North';
+import SouthIcon from '@mui/icons-material/South';
+import SwapVertIcon from '@mui/icons-material/SwapVert';
 
 const Section1 = ({id, isActive}) => {
 
@@ -14,6 +18,9 @@ const Section1 = ({id, isActive}) => {
     const [section1Data, setSection1Data] = useState([]);
     const [yearRange, setYearRange] = useState([1990, 2019]);
     const minRangeDistance = 1;
+    const [sortBy, setSortBy] = useState("Entity");
+    const [sortOrder, setSortOrder] = useState("asc");
+    const [hoveredColumn, setHoveredColumn] = useState(null);
 
     //fetch data
     useEffect(() => {
@@ -40,7 +47,35 @@ const Section1 = ({id, isActive}) => {
     });
 
     console.log("dataByCountry",dataByCountry);
+
+    //memorize sorted Data
+    const sortedData = useMemo(() => {
+        const sorted = [...Object.values(dataByCountry)]; //copy dataByCountry
+        sorted.sort((a, b) => {
+                const aValue = a[sortBy] || '';
+                const bValue = b[sortBy] || '';
+                return sortOrder === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+        })
+        return sorted;
+
+    }, [sortBy, sortOrder, dataByCountry]);
     
+    //sorting indicator
+    const getSortingIcon = (column) => {
+        if (column === sortBy) {
+            return sortOrder === 'asc' ? <SouthIcon fontSize="small"/> : <NorthIcon fontSize="small"/>
+        }
+    }
+
+    //handle hover event on the columns header
+    const handleColumnHover = (column) => {
+        if(column !== sortBy){
+            setHoveredColumn(column);
+        }
+    }
+    const handleColumnLeave = (column) => {
+        setHoveredColumn(null);
+    }
 
     //change data visulization
     const handleDataVisulizationChange = (event, visualType) => {
@@ -71,32 +106,65 @@ const Section1 = ({id, isActive}) => {
     //create table
     const canvas = document.getElementById("#canvas");
 
-    // Use CSS to style the sticky header
-    const tableHeaderStyle = {
-    position: 'sticky',
-    top: 0,
-    backgroundColor: 'white',
-    zIndex: 1, // Ensure the header stays above the body while scrolling
-};
-
     const createTable = (data) => {
+
+        //sort data function
+        const sortData = (column) => {
+            //deal with the column which is already sorted
+            if (sortBy === column){
+                setSortOrder( sortOrder === 'asc' ? 'desc' : 'asc');
+            } else{
+                setSortBy(column);
+                setSortOrder('asc');
+            }
+        }
+        
         
         return(
             <div style={{ maxHeight: "400px", overflowY: "auto" }}>
                 <Table>
                     <TableHead>
-                        <TableRow style={tableHeaderStyle}>
-                            <TableCell>Country / Area</TableCell>
-                            <TableCell>{yearRange[0]}</TableCell>
-                            <TableCell>{yearRange[1]}</TableCell>
+                        <TableRow className="columnheader row">
+                            <TableCell 
+                                className="column-header-cell"
+                                onClick={() => sortData("Entity")}
+                                onMouseEnter={() => handleColumnHover("Entity")}
+                                onMouseLeave={handleColumnLeave}
+                            >
+                                Country / Area
+                                {getSortingIcon("Entity")}
+                                {hoveredColumn === "Entity" && <SwapVertIcon fontSize="small" sx={{color: "gray"}}/>}
+                            </TableCell>
+
+                            <TableCell 
+                                className="column-header-cell"
+                                onClick={() => sortData(yearRange[0])}
+                                onMouseEnter={() => handleColumnHover(yearRange[0])}
+                                onMouseLeave={handleColumnLeave}
+                            >
+                                {yearRange[0]}
+                                {getSortingIcon(yearRange[0])}
+                                {hoveredColumn === yearRange[0] && <SwapVertIcon fontSize="small" sx={{color: "gray"}}/>}
+                            </TableCell>
+
+                            <TableCell 
+                                className="column-header-cell"
+                                onClick={() => sortData(yearRange[1])}
+                                onMouseEnter={() => handleColumnHover(yearRange[1])}
+                                onMouseLeave={handleColumnLeave}
+                            >
+                                {yearRange[1]}
+                                {getSortingIcon(yearRange[1])}
+                                {hoveredColumn === yearRange[1] && <SwapVertIcon fontSize="small" sx={{color: "gray"}}/>}
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {Object.values(dataByCountry).map((row) => (
-                            <TableRow key={row.Entity}>
-                                <TableCell>{row.Entity}</TableCell>
-                                <TableCell>{row[yearRange[0]]}</TableCell>
-                                <TableCell>{row[yearRange[1]]}</TableCell>
+                        {sortedData.map((row) => (
+                            <TableRow className="row" key={row.Entity} >
+                                <TableCell sx={{width: "240px"}}>{row.Entity}</TableCell>
+                                <TableCell sx={{width: "240px"}}>{row[yearRange[0]]}</TableCell>
+                                <TableCell sx={{width: "240px"}}>{row[yearRange[1]]}</TableCell>
                             </TableRow>
                             )  
                         )}

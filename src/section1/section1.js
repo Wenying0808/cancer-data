@@ -6,13 +6,13 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import WindowOutlinedIcon from '@mui/icons-material/WindowOutlined';
 import PublicOutlinedIcon from '@mui/icons-material/PublicOutlined';
-import { Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
+import { Table, TableHead, TableRow, TableCell, TableBody, Box, Slider } from '@mui/material';
 
 const Section1 = ({id, isActive}) => {
 
     const [dataVisualization, setDataVisualization] = useState("table");
-
     const [section1Data, setSection1Data] = useState([]);
+    const [yearRange, setYearRange] = useState([1990, 2019])
 
     //fetch data
     useEffect(() => {
@@ -31,22 +31,30 @@ const Section1 = ({id, isActive}) => {
 
     section1Data.forEach((row) => {
         if(!dataByCountry[row.Entity]){
-            dataByCountry[row.Entity] = {Entity: row.Entity, "2009": "-", "2019": "-"}
+            dataByCountry[row.Entity] = {Entity: row.Entity}
         }
-        
-        if(row.Year==="2009"){
-            dataByCountry[row.Entity]["2009"] = row["Current number of cases of neoplasms per 100 people, in both sexes aged all ages"];
-        }
-        if(row.Year==="2019"){
-            dataByCountry[row.Entity]["2019"] = row["Current number of cases of neoplasms per 100 people, in both sexes aged all ages"];
-        }
+        //add data from 1990 to 2019 to each country
+        dataByCountry[row.Entity][row.Year] = row["Current number of cases of neoplasms per 100 people, in both sexes aged all ages"];
+        dataByCountry[row.Entity]["Code"] = row["Code"];
     });
+
+    console.log("dataByCountry",dataByCountry);
     
 
     //change data visulization
     const handleDataVisulizationChange = (event, visualType) => {
         setDataVisualization(visualType);
     }
+
+    //display value for the slider
+    function valueText(value){
+        return value;
+    }
+
+    //set the range of the year
+    const handleYearRangeChange = (event, newRange) => {
+        setYearRange(newRange);
+    };
 
     //create table
     const canvas = document.getElementById("#canvas");
@@ -67,16 +75,16 @@ const Section1 = ({id, isActive}) => {
                     <TableHead>
                         <TableRow style={tableHeaderStyle}>
                             <TableCell>Country / Area</TableCell>
-                            <TableCell>2009</TableCell>
-                            <TableCell>2019</TableCell>
+                            <TableCell>{yearRange[0]}</TableCell>
+                            <TableCell>{yearRange[1]}</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {Object.values(dataByCountry).map((row) => (
                             <TableRow key={row.Entity}>
                                 <TableCell>{row.Entity}</TableCell>
-                                <TableCell>{row["2009"]}</TableCell>
-                                <TableCell>{row["2019"]}</TableCell>
+                                <TableCell>{row[yearRange[0]]}</TableCell>
+                                <TableCell>{row[yearRange[1]]}</TableCell>
                             </TableRow>
                             )  
                         )}
@@ -102,6 +110,22 @@ const Section1 = ({id, isActive}) => {
                         Map
                     </ToggleButton>
                 </ToggleButtonGroup>
+                <div className="slider-control">
+                    <div className="slider-label">{yearRange[0]}</div>
+                    <Box sx={{ width: 300 }}>
+                        <Slider 
+                            value={yearRange} 
+                            onChange={handleYearRangeChange}
+                            valueLabelDisplay="auto"
+                            getAriaValueText={valueText}
+                            min={1990} 
+                            max={2019}
+                            minDistance={1} 
+                        />
+                    </Box>
+                    <div className="slider-label">{yearRange[1]}</div>
+                </div>
+                
             </div>
             <div className="canvas" id="canvas">
                 {createTable(section1Data)}

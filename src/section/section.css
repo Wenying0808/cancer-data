@@ -31,9 +31,31 @@ section{
     line-height: normal;
 }
 
+.control{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: left;
+    gap: 100px;
+    align-self: stretch;
+    padding: 42px 40px 0px 40px
+}
+
+.slider-control{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap:20px;
+}
+.slider-label{
+    font-size: 12px;;
+}
+
+
 .canvas{
     display: border-box;
     margin: 40px;
     width: 820px;
     height: 400px;
 }
+

@@ -12,7 +12,8 @@ const Section1 = ({id, isActive}) => {
 
     const [dataVisualization, setDataVisualization] = useState("table");
     const [section1Data, setSection1Data] = useState([]);
-    const [yearRange, setYearRange] = useState([1990, 2019])
+    const [yearRange, setYearRange] = useState([1990, 2019]);
+    const minRangeDistance = 1;
 
     //fetch data
     useEffect(() => {
@@ -52,8 +53,19 @@ const Section1 = ({id, isActive}) => {
     }
 
     //set the range of the year
-    const handleYearRangeChange = (event, newRange) => {
-        setYearRange(newRange);
+    const handleYearRangeChange = (event, newRange, activeThumb) => {
+        if(newRange[1]-newRange[0] < minRangeDistance){
+            if(activeThumb === 0){
+                const clamped = Math.min(newRange[0], 2019 - minRangeDistance);
+                setYearRange([clamped, clamped+minRangeDistance]);
+            }else{
+                const clamped = Math.max(newRange[1], minRangeDistance);
+                setYearRange([clamped-minRangeDistance, clamped]);
+            }
+        } else {
+            setYearRange(newRange);
+        }
+       
     };
 
     //create table
@@ -112,7 +124,7 @@ const Section1 = ({id, isActive}) => {
                 </ToggleButtonGroup>
                 <div className="slider-control">
                     <div className="slider-label">{yearRange[0]}</div>
-                    <Box sx={{ width: 300 }}>
+                    <Box sx={{ width: 400 }}>
                         <Slider 
                             value={yearRange} 
                             onChange={handleYearRangeChange}
@@ -120,7 +132,7 @@ const Section1 = ({id, isActive}) => {
                             getAriaValueText={valueText}
                             min={1990} 
                             max={2019}
-                            minDistance={1} 
+                            disableSwap
                         />
                     </Box>
                     <div className="slider-label">{yearRange[1]}</div>

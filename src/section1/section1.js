@@ -1,26 +1,26 @@
-import React, {useState, useEffect, useMemo} from "react";
+import React, {useState, useEffect, useMemo, useRef} from "react";
+import ReactDOM from 'react-dom';
+import { createRoot } from "react-dom/client";
 import * as d3 from "d3";
 import "../section/section.css";
 import "./section1_table.css";
 import section1Dataset from './section1data.csv';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import WindowOutlinedIcon from '@mui/icons-material/WindowOutlined';
-import PublicOutlinedIcon from '@mui/icons-material/PublicOutlined';
+import ToggleButtonTableMap from "../toggleButton/toggleButtonTableMap";
 import { Table, TableHead, TableRow, TableCell, TableBody, Box, Slider } from '@mui/material';
 import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
 
 const Section1 = ({id, isActive}) => {
-
-    const [dataVisualization, setDataVisualization] = useState("table");
+    const [selectedOption, setSelectedOption] = useState("table");
     const [section1Data, setSection1Data] = useState([]);
     const [yearRange, setYearRange] = useState([1990, 2019]);
     const minRangeDistance = 1;
     const [sortBy, setSortBy] = useState("Entity");
     const [sortOrder, setSortOrder] = useState("asc");
     const [hoveredColumn, setHoveredColumn] = useState(null);
+    const canvasRef = useRef(null);
+    const rootRef = useRef(null); //to store the reference to the root outside of the useEffect.
 
     //fetch data
     useEffect(() => {
@@ -46,14 +46,14 @@ const Section1 = ({id, isActive}) => {
         dataByCountry[row.Entity]["Code"] = row["Code"];
     });
 
-    console.log("dataByCountry",dataByCountry);
+    /*console.log("dataByCountry",dataByCountry);*/
 
     //numeric sort
     const numericSort = (a, b) => {
         const aValue = parseFloat(a[sortBy]) || 0;
         const bValue = parseFloat(b[sortBy]) || 0;
         return sortOrder === 'asc' ? aValue-bValue : bValue-aValue;
-    }
+    };
 
     //memorize sorted Data
     const sortedData = useMemo(() => {
@@ -68,7 +68,9 @@ const Section1 = ({id, isActive}) => {
                 }
         })
         return sorted; //return sorted array
-    }, [sortBy, sortOrder, dataByCountry]);
+    }, [sortBy, sortOrder, dataByCountry, numericSort]);
+    
+    console.log("sortedData", sortedData);
     
     //sorting indicator
     const getSortingIcon = (column) => {
@@ -85,11 +87,6 @@ const Section1 = ({id, isActive}) => {
     }
     const handleColumnLeave = (column) => {
         setHoveredColumn(null);
-    }
-
-    //change data visulization
-    const handleDataVisulizationChange = (event, visualType) => {
-        setDataVisualization(visualType);
     }
 
     //display value for the slider
@@ -113,11 +110,15 @@ const Section1 = ({id, isActive}) => {
        
     };
 
-    //create table
-    const canvas = document.getElementById("#canvas");
+    // Remove existing elements from canvas
+    const clearCanvas = () => {
+        const canvas = d3.select("#canvas");
+        canvas.selectAll("*").remove();
+    };
+
 
     const createTable = (data) => {
-
+        
         //sort data function
         const sortData = (column) => {
             //deal with the column which is already sorted
@@ -185,28 +186,51 @@ const Section1 = ({id, isActive}) => {
         );
     };
 
+    const createMap = () => {
+        const canvas = d3.select("#canvas");
+        // Append an SVG element to the canvas
+        const svg = canvas.append("svg")
+            .attr("id", "map-svg")
+            .attr("width", "100px")
+            .attr("height", "100px");
+
+        // Append a rectangle to the SVG
+        svg.append("rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", "100px")
+            .attr("height", "100px")
+            .attr("fill", "black");
+    };
+
+    const handleOptionChange = (event, newOption) => {
+        if (newOption !== null){
+            setSelectedOption(newOption);
+            clearCanvas();
+        }
+        console.log("previous selectedOption: ", selectedOption);
+        console.log("current selectedOption: ", newOption);
+        
+        //indicate in whcih container to render the table
+        const canvas = document.getElementById("canvas");
+        const root = createRoot(canvas); //Call createRoot to create a React root for displaying content inside a browser DOM element.
+        
+        if(newOption === "table"){
+            root.render(createTable(sortedData));
+        } else if(newOption === "map"){
+            createMap();
+        }
+    };
+    
 
     return(
         <section id={id} className={`section ${isActive ? "active" : ""}`}>
             <div className="title" id="title">Prevalence Around The World</div>
             <div className="description" id="description">The estimated share of the total population with any form of cancer.</div>
             <div className="control" id="control">
-                <ToggleButtonGroup value={dataVisualization} onChange={handleDataVisulizationChange}>
-                    <ToggleButton value="table" sx={{gap:"8px"}}>
-                        <WindowOutlinedIcon/>
-                        Table
-                    </ToggleButton>
-                    <ToggleButton value="map" sx={{gap:"8px"}}>
-                        <PublicOutlinedIcon/>
-                        Map
-                    </ToggleButton>
-                </ToggleButtonGroup>
-                
-                
+                <ToggleButtonTableMap value={selectedOption} onChange={handleOptionChange}/>
             </div>
-            <div className="canvas" id="canvas">
-                {createTable(sortedData)}
-            </div>
+            <div className="canvas" id="canvas">{createTable(sortedData)}</div>
             <div className="slider-control">
                     <div className="slider-label">1990</div>
                     <Box sx={{ width: 600 }}>

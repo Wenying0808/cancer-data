@@ -48,16 +48,26 @@ const Section1 = ({id, isActive}) => {
 
     console.log("dataByCountry",dataByCountry);
 
+    //numeric sort
+    const numericSort = (a, b) => {
+        const aValue = parseFloat(a[sortBy]) || 0;
+        const bValue = parseFloat(b[sortBy]) || 0;
+        return sortOrder === 'asc' ? aValue-bValue : bValue-aValue;
+    }
+
     //memorize sorted Data
     const sortedData = useMemo(() => {
         const sorted = [...Object.values(dataByCountry)]; //copy dataByCountry
-        sorted.sort((a, b) => {
+            sorted.sort((a, b) => {
+                if(sortBy === "Entity") {
                 const aValue = a[sortBy] || '';
                 const bValue = b[sortBy] || '';
                 return sortOrder === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+                }else{
+                return numericSort(a,b);
+                }
         })
-        return sorted;
-
+        return sorted; //return sorted array
     }, [sortBy, sortOrder, dataByCountry]);
     
     //sorting indicator
@@ -119,14 +129,13 @@ const Section1 = ({id, isActive}) => {
             }
         }
         
-        
         return(
             <div style={{ maxHeight: "400px", overflowY: "auto" }}>
                 <Table>
-                    <TableHead>
-                        <TableRow className="columnheader row">
+                    <TableHead className="columnheader">
+                        <TableRow className="row" >
                             <TableCell 
-                                className="column-header-cell"
+                                className="columnheader-cell"
                                 onClick={() => sortData("Entity")}
                                 onMouseEnter={() => handleColumnHover("Entity")}
                                 onMouseLeave={handleColumnLeave}
@@ -137,7 +146,7 @@ const Section1 = ({id, isActive}) => {
                             </TableCell>
 
                             <TableCell 
-                                className="column-header-cell"
+                                className="columnheader-cell"
                                 onClick={() => sortData(yearRange[0])}
                                 onMouseEnter={() => handleColumnHover(yearRange[0])}
                                 onMouseLeave={handleColumnLeave}
@@ -148,7 +157,7 @@ const Section1 = ({id, isActive}) => {
                             </TableCell>
 
                             <TableCell 
-                                className="column-header-cell"
+                                className="columnheader-cell"
                                 onClick={() => sortData(yearRange[1])}
                                 onMouseEnter={() => handleColumnHover(yearRange[1])}
                                 onMouseLeave={handleColumnLeave}
@@ -160,11 +169,11 @@ const Section1 = ({id, isActive}) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {sortedData.map((row) => (
+                        {data.map((row) => (
                             <TableRow className="row" key={row.Entity} >
-                                <TableCell sx={{width: "240px"}}>{row.Entity}</TableCell>
-                                <TableCell sx={{width: "240px"}}>{row[yearRange[0]]}</TableCell>
-                                <TableCell sx={{width: "240px"}}>{row[yearRange[1]]}</TableCell>
+                                <TableCell className="cell" >{row.Entity}</TableCell>
+                                <TableCell className="cell" >{row[yearRange[0]]}</TableCell>
+                                <TableCell className="cell" >{row[yearRange[1]]}</TableCell>
                             </TableRow>
                             )  
                         )}
@@ -181,11 +190,11 @@ const Section1 = ({id, isActive}) => {
             <div className="description" id="description">The estimated share of the total population with any form of cancer.</div>
             <div className="control" id="control">
                 <ToggleButtonGroup value={dataVisualization} onChange={handleDataVisulizationChange}>
-                    <ToggleButton value="table">
+                    <ToggleButton value="table" sx={{gap:"8px"}}>
                         <WindowOutlinedIcon/>
                         Table
                     </ToggleButton>
-                    <ToggleButton value="map">
+                    <ToggleButton value="map" sx={{gap:"8px"}}>
                         <PublicOutlinedIcon/>
                         Map
                     </ToggleButton>
@@ -208,7 +217,7 @@ const Section1 = ({id, isActive}) => {
                 
             </div>
             <div className="canvas" id="canvas">
-                {createTable(section1Data)}
+                {createTable(sortedData)}
             </div>
             <div className="resource" id="resource">Data source: IHME, Global Burden of Disease (2019)</div>
         </section>

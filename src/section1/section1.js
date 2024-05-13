@@ -200,7 +200,7 @@ const Section1 = ({id, isActive}) => {
                     </ToggleButton>
                 </ToggleButtonGroup>
                 <div className="slider-control">
-                    <div className="slider-label">{yearRange[0]}</div>
+                    <div className="slider-label">1990</div>
                     <Box sx={{ width: 400 }}>
                         <Slider 
                             value={yearRange} 
@@ -212,7 +212,7 @@ const Section1 = ({id, isActive}) => {
                             disableSwap
                         />
                     </Box>
-                    <div className="slider-label">{yearRange[1]}</div>
+                    <div className="slider-label">2019</div>
                 </div>
                 
             </div>

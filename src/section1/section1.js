@@ -1,5 +1,4 @@
-import React, {useState, useEffect, useMemo, useRef} from "react";
-import ReactDOM from 'react-dom';
+import React, {useState, useEffect, useMemo} from "react";
 import { createRoot } from "react-dom/client";
 import * as d3 from "d3";
 import "../section/section.css";
@@ -19,8 +18,7 @@ const Section1 = ({id, isActive}) => {
     const [sortBy, setSortBy] = useState("Entity");
     const [sortOrder, setSortOrder] = useState("asc");
     const [hoveredColumn, setHoveredColumn] = useState(null);
-    const canvasRef = useRef(null);
-    const rootRef = useRef(null); //to store the reference to the root outside of the useEffect.
+
 
     //fetch data
     useEffect(() => {
@@ -48,15 +46,17 @@ const Section1 = ({id, isActive}) => {
 
     /*console.log("dataByCountry",dataByCountry);*/
 
-    //numeric sort
-    const numericSort = (a, b) => {
-        const aValue = parseFloat(a[sortBy]) || 0;
-        const bValue = parseFloat(b[sortBy]) || 0;
-        return sortOrder === 'asc' ? aValue-bValue : bValue-aValue;
-    };
+    
 
     //memorize sorted Data
     const sortedData = useMemo(() => {
+        //numeric sort
+        const numericSort = (a, b) => {
+            const aValue = parseFloat(a[sortBy]) || 0;
+            const bValue = parseFloat(b[sortBy]) || 0;
+            return sortOrder === 'asc' ? aValue-bValue : bValue-aValue;
+        };
+
         const sorted = [...Object.values(dataByCountry)]; //copy dataByCountry
             sorted.sort((a, b) => {
                 if(sortBy === "Entity") {
@@ -68,7 +68,7 @@ const Section1 = ({id, isActive}) => {
                 }
         })
         return sorted; //return sorted array
-    }, [sortBy, sortOrder, dataByCountry, numericSort]);
+    }, [sortBy, sortOrder, dataByCountry]);
     
     console.log("sortedData", sortedData);
     
@@ -115,6 +115,10 @@ const Section1 = ({id, isActive}) => {
         const canvas = d3.select("#canvas");
         canvas.selectAll("*").remove();
     };
+    const clearSliderControl = () => {
+        const sliderControl = d3.select("#slider-control");
+        sliderControl.selectAll("*").remove();
+    }
 
 
     const createTable = (data) => {
@@ -203,20 +207,45 @@ const Section1 = ({id, isActive}) => {
             .attr("fill", "black");
     };
 
+    const createTableSlider = () => {
+        return(
+            <>
+                <div className="slider-label">1990</div>
+                    <Box sx={{ width: 600 }}>
+                        <Slider 
+                            value={yearRange} 
+                            onChange={handleYearRangeChange}
+                            valueLabelDisplay="auto"
+                            getAriaValueText={valueText}
+                            min={1990} 
+                            max={2019}
+                            disableSwap
+                        />
+                    </Box>
+                <div className="slider-label">2019</div>
+            </>
+                
+        );
+    }
+
     const handleOptionChange = (event, newOption) => {
         if (newOption !== null){
             setSelectedOption(newOption);
             clearCanvas();
+            clearSliderControl();
         }
         console.log("previous selectedOption: ", selectedOption);
         console.log("current selectedOption: ", newOption);
         
         //indicate in whcih container to render the table
         const canvas = document.getElementById("canvas");
-        const root = createRoot(canvas); //Call createRoot to create a React root for displaying content inside a browser DOM element.
+        const canvasRoot = createRoot(canvas); //Call createRoot to create a React root for displaying content inside a browser DOM element.
+        const sliderControl = document.getElementById("slider-control");
+        const sliderControlRoot = createRoot(sliderControl);
         
         if(newOption === "table"){
-            root.render(createTable(sortedData));
+            canvasRoot.render(createTable(sortedData));
+            sliderControlRoot.render(createTableSlider());
         } else if(newOption === "map"){
             createMap();
         }
@@ -231,21 +260,7 @@ const Section1 = ({id, isActive}) => {
                 <ToggleButtonTableMap value={selectedOption} onChange={handleOptionChange}/>
             </div>
             <div className="canvas" id="canvas">{createTable(sortedData)}</div>
-            <div className="slider-control">
-                    <div className="slider-label">1990</div>
-                    <Box sx={{ width: 600 }}>
-                        <Slider 
-                            value={yearRange} 
-                            onChange={handleYearRangeChange}
-                            valueLabelDisplay="auto"
-                            getAriaValueText={valueText}
-                            min={1990} 
-                            max={2019}
-                            disableSwap
-                        />
-                    </Box>
-                    <div className="slider-label">2019</div>
-                </div>
+            <div className="slider-control" id="slider-control">{createTableSlider()}</div>
             <div className="resource" id="resource">Data source: IHME, Global Burden of Disease (2019)</div>
         </section>
     )

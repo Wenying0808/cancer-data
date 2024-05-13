@@ -133,7 +133,7 @@ const Section1 = ({id, isActive}) => {
             <div style={{ maxHeight: "400px", overflowY: "auto" }}>
                 <Table>
                     <TableHead className="columnheader">
-                        <TableRow className="row" >
+                        <TableRow className="columnheader-row" >
                             <TableCell 
                                 className="columnheader-cell"
                                 onClick={() => sortData("Entity")}

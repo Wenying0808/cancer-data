@@ -152,6 +152,7 @@ const Section1 = ({id, isActive}) => {
                                 onMouseLeave={handleColumnLeave}
                             >
                                 {yearRange[0]}
+                                (%)
                                 {getSortingIcon(yearRange[0])}
                                 {hoveredColumn === yearRange[0] && <SwapVertIcon fontSize="small" sx={{color: "gray"}}/>}
                             </TableCell>
@@ -163,6 +164,7 @@ const Section1 = ({id, isActive}) => {
                                 onMouseLeave={handleColumnLeave}
                             >
                                 {yearRange[1]}
+                                (%)
                                 {getSortingIcon(yearRange[1])}
                                 {hoveredColumn === yearRange[1] && <SwapVertIcon fontSize="small" sx={{color: "gray"}}/>}
                             </TableCell>
@@ -199,9 +201,15 @@ const Section1 = ({id, isActive}) => {
                         Map
                     </ToggleButton>
                 </ToggleButtonGroup>
-                <div className="slider-control">
+                
+                
+            </div>
+            <div className="canvas" id="canvas">
+                {createTable(sortedData)}
+            </div>
+            <div className="slider-control">
                     <div className="slider-label">1990</div>
-                    <Box sx={{ width: 400 }}>
+                    <Box sx={{ width: 600 }}>
                         <Slider 
                             value={yearRange} 
                             onChange={handleYearRangeChange}
@@ -214,11 +222,6 @@ const Section1 = ({id, isActive}) => {
                     </Box>
                     <div className="slider-label">2019</div>
                 </div>
-                
-            </div>
-            <div className="canvas" id="canvas">
-                {createTable(sortedData)}
-            </div>
             <div className="resource" id="resource">Data source: IHME, Global Burden of Disease (2019)</div>
         </section>
     )

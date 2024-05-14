@@ -47,10 +47,10 @@ section{
     align-items: center;
     gap:20px;
 }
+
 .slider-label{
     font-size: 12px;;
 }
-
 
 .canvas{
     display: border-box;

@@ -14,6 +14,7 @@ const Section1 = ({id, isActive}) => {
     const [selectedOption, setSelectedOption] = useState("table");
     const [section1Data, setSection1Data] = useState([]);
     const [yearRange, setYearRange] = useState([1990, 2019]);
+    const [mapYear, setMapYear] = useState(2009);
     const minRangeDistance = 1;
     const [sortBy, setSortBy] = useState("Entity");
     const [sortOrder, setSortOrder] = useState("asc");
@@ -110,6 +111,11 @@ const Section1 = ({id, isActive}) => {
        
     };
 
+    const handleMapYearChange = (event, newYear) => {
+        console.log("newYear on map slider", newYear)
+        setMapYear(newYear);
+    };
+
     // Remove existing elements from canvas
     const clearCanvas = () => {
         const canvas = d3.select("#canvas");
@@ -119,7 +125,6 @@ const Section1 = ({id, isActive}) => {
         const sliderControl = d3.select("#slider-control");
         sliderControl.selectAll("*").remove();
     }
-
 
     const createTable = (data) => {
         
@@ -228,6 +233,26 @@ const Section1 = ({id, isActive}) => {
         );
     }
 
+    const createMapSlider = () => {
+        return(
+            <>
+                <div className="slider-label">1990</div>
+                        <Box sx={{ width: 600 }}>
+                            <Slider 
+                                track={false}
+                                value={mapYear} 
+                                onChange={handleMapYearChange}
+                                valueLabelDisplay="auto"
+                                getAriaValueText={valueText}
+                                min={1990} 
+                                max={2019}
+                            />
+                        </Box>
+                    <div className="slider-label">2019</div>
+            </>
+        );
+    };
+
     const handleOptionChange = (event, newOption) => {
         if (newOption !== null){
             setSelectedOption(newOption);
@@ -248,6 +273,7 @@ const Section1 = ({id, isActive}) => {
             sliderControlRoot.render(createTableSlider());
         } else if(newOption === "map"){
             createMap();
+            sliderControlRoot.render(createMapSlider());
         }
     };
     

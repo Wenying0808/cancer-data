@@ -16,7 +16,7 @@ function App() {
 
   return (
     <div className="App">
-      <Navbar onNavbarClick={handleNavbarClcik}/>
+      <Navbar onNavbarClick={handleNavbarClcik} activeSelection={activeSelection}/>
       <div className='sections'>
         <Section1 id="section1" isActive={activeSelection === "section1"}/>
         <Section2 id="section2" isActive={activeSelection === "section2"}/>

@@ -9,11 +9,11 @@ const ToggleButtonTableChart = ({value, onChange}) => {
     return (
         <ToggleButtonGroup value={value} onChange={onChange} exclusive>
             <ToggleButton value="table" sx={{gap:"8px"}}>
-                <WindowOutlinedIcon/>
+                <WindowOutlinedIcon fontSize="small"/>
                 Table
             </ToggleButton>
             <ToggleButton value="chart" sx={{gap:"8px"}}>
-                <InsertChartOutlinedIcon/>
+                <InsertChartOutlinedIcon fontSize="small"/>
                 Chart
             </ToggleButton>
         </ToggleButtonGroup>

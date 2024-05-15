@@ -1,6 +1,6 @@
-import React, {useState, useEffect, useMemo, useRef} from "react";
-import { createRoot } from "react-dom/client";
+import React, {useState, useEffect, useMemo} from "react";
 import * as d3 from "d3";
+import * as topojson from 'topojson-client';
 import "../section/section.css";
 import "./section1_table.css";
 import section1Dataset from './section1data.csv';
@@ -9,11 +9,17 @@ import { Table, TableHead, TableRow, TableCell, TableBody, Box, Slider } from '@
 import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
+import WorldMap from "../worldmap/worldmap";
     
+console.log("topojson",topojson); //check if topojson is imported
 
 const Section1 = ({id, isActive}) => {
+
+    const worldAltasURL="https://unpkg.com/world-atlas@1.1.4/world/50m.json";
+
     const [selectedOption, setSelectedOption] = useState("table");
     const [section1Data, setSection1Data] = useState([]);
+    const [mapData, setMapData] = useState([]);
     const [yearRange, setYearRange] = useState([1990, 2019]);
     const [mapYear, setMapYear] = useState(2009);
     const minRangeDistance = 1;
@@ -21,32 +27,33 @@ const Section1 = ({id, isActive}) => {
     const [sortOrder, setSortOrder] = useState("asc");
     const [hoveredColumn, setHoveredColumn] = useState(null);
 
-    // Create refs for roots, which is a container used to refner table/map and sliders
-    const canvasRootRef = useRef(null);
-    const sliderControlRootRef = useRef(null);
-
-    // When the component mounts, initialize the roots
-    useEffect(() => {
-        // Check if the refs are not null before initializing
-        if (canvasRootRef.current === null) {
-            canvasRootRef.current = createRoot(document.getElementById("canvas"));
-        }
-        if (sliderControlRootRef.current === null) {
-            sliderControlRootRef.current = createRoot(document.getElementById("slider-control"));
-        }
-    }, []);
-
-    //fetch data
+    //fetch section 1 data
     useEffect(() => {
         d3.csv(section1Dataset).then(function(data, error){
             if(error){
                 console.log("fetchdata", error);
             } else{
                 setSection1Data(data);
-                /*console.log("fetched section1 data:", data);*/
+                /*console.log("fetched section1 cancer data:", data);*/
             }
         });
     }, []);
+    //fetch data from json
+
+    useEffect(() => {
+        fetch(worldAltasURL)
+        .then((response)=> response.json())
+        .then((topoJSONData)=>{
+            setMapData(topoJSONData);
+            console.log("topoJSONData",topoJSONData);
+            const worldFeatures = topojson.feature(topoJSONData, 'countries');
+            console.log("data", worldFeatures);
+            
+        })
+    }, []);
+
+
+    console.log("mapData", mapData);
 
     //group data per country
     const dataByCountry = {};
@@ -60,7 +67,7 @@ const Section1 = ({id, isActive}) => {
         dataByCountry[row.Entity]["Code"] = row["Code"];
     });
 
-    /*console.log("dataByCountry",dataByCountry);*/
+    console.log("dataByCountry",dataByCountry);
 
     //memorize sorted Data
     const sortedData = useMemo(() => {
@@ -201,9 +208,7 @@ const Section1 = ({id, isActive}) => {
 
     const createMap = () => {
         return(
-            <div color="black" width="20px" height ="20px">
-                map
-            </div>
+            <WorldMap/>
         )
     };
 

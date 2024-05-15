@@ -259,7 +259,11 @@ const Section1 = ({id, isActive}) => {
 
     return(
         <section id={id} className={`section ${isActive ? "active" : ""}`}>
-            <div className="title" id="title">Prevalence Around The World</div>
+            <div className="title" id="title">
+                Prevalence Around The World 
+                {selectedOption === "table" && ` (Years: ${yearRange[0]} - ${yearRange[1]})`} 
+                {selectedOption === "map" && ` (Year: ${mapYear})`} 
+            </div>
             <div className="description" id="description">The estimated share of the total population with any form of cancer.</div>
             <div className="control" id="control">
                 <ToggleButtonTableMap value={selectedOption} onChange={handleOptionChange}/>

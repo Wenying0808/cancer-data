@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useMemo} from "react";
 import * as d3 from "d3";
 import * as topojson from 'topojson-client';
+import iso3166Lookup from "iso3166-lookup";
 import "../section/section.css";
 import "./section1_table.css";
 import section1Dataset from './section1data.csv';
@@ -38,8 +39,8 @@ const Section1 = ({id, isActive}) => {
             }
         });
     }, []);
-    //fetch data from json
 
+    //fetch data from json
     useEffect(() => {
         fetch(worldAltasURL)
         .then((response)=> response.json())
@@ -65,6 +66,14 @@ const Section1 = ({id, isActive}) => {
         //add data from 1990 to 2019 to each country
         dataByCountry[row.Entity][row.Year] = row["Current number of cases of neoplasms per 100 people, in both sexes aged all ages"];
         dataByCountry[row.Entity]["Code"] = row["Code"];
+
+        //add country code from iso to the data
+        if (!dataByCountry[row.Entity].hasOwnProperty("id")) {
+            const numericCode = iso3166Lookup.findCountry(row.Entity, "num3");
+            if(numericCode){
+                dataByCountry[row.Entity].id = numericCode;
+            }
+        }
     });
 
     console.log("dataByCountry",dataByCountry);

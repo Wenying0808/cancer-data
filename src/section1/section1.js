@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo} from "react";
+import React, {useState, useEffect, useMemo, useRef} from "react";
 import { createRoot } from "react-dom/client";
 import * as d3 from "d3";
 import "../section/section.css";
@@ -9,8 +9,6 @@ import { Table, TableHead, TableRow, TableCell, TableBody, Box, Slider } from '@
 import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
-
-
     
 
 const Section1 = ({id, isActive}) => {
@@ -23,6 +21,20 @@ const Section1 = ({id, isActive}) => {
     const [sortOrder, setSortOrder] = useState("asc");
     const [hoveredColumn, setHoveredColumn] = useState(null);
 
+    // Create refs for roots, which is a container used to refner table/map and sliders
+    const canvasRootRef = useRef(null);
+    const sliderControlRootRef = useRef(null);
+
+    // When the component mounts, initialize the roots
+    useEffect(() => {
+        // Check if the refs are not null before initializing
+        if (canvasRootRef.current === null) {
+            canvasRootRef.current = createRoot(document.getElementById("canvas"));
+        }
+        if (sliderControlRootRef.current === null) {
+            sliderControlRootRef.current = createRoot(document.getElementById("slider-control"));
+        }
+    }, []);
 
     //fetch data
     useEffect(() => {
@@ -117,15 +129,6 @@ const Section1 = ({id, isActive}) => {
         setMapYear(newYear);
     };
 
-    // Remove existing elements from canvas
-    const clearCanvas = () => {
-        const canvas = d3.select("#canvas");
-        canvas.selectAll("*").remove();
-    };
-    const clearSliderControl = () => {
-        const sliderControl = d3.select("#slider-control");
-        sliderControl.selectAll("*").remove();
-    }
 
     const createTable = (data) => {
         
@@ -197,20 +200,11 @@ const Section1 = ({id, isActive}) => {
     };
 
     const createMap = () => {
-        const canvas = d3.select("#canvas");
-        // Append an SVG element to the canvas
-        const svg = canvas.append("svg")
-            .attr("id", "map-svg")
-            .attr("width", "100px")
-            .attr("height", "100px");
-
-        // Append a rectangle to the SVG
-        svg.append("rect")
-            .attr("x", 0)
-            .attr("y", 0)
-            .attr("width", "100px")
-            .attr("height", "100px")
-            .attr("fill", "black");
+        return(
+            <div color="black" width="20px" height ="20px">
+                map
+            </div>
+        )
     };
 
     const createTableSlider = () => {
@@ -254,35 +248,14 @@ const Section1 = ({id, isActive}) => {
         );
     };
 
-
     
     const handleOptionChange = (event, newOption) => {
         if (newOption !== null){
             setSelectedOption(newOption);
-            clearCanvas();
-            clearSliderControl();
         }
         console.log("previous selectedOption: ", selectedOption);
         console.log("current selectedOption: ", newOption);
-
-        //indicate in whcih container to render the table
-        const canvas = document.getElementById("canvas");
-        let canvasRoot = createRoot(canvas);
-        //indicate in whcih container to render the slider
-        const sliderControl = document.getElementById("slider-control");
-        let sliderControlRoot = createRoot(sliderControl);
-
-        
-        if(newOption === "table"){
-            canvasRoot.render(createTable(sortedData));
-            sliderControlRoot.render(createTableSlider());
-
-        } else if(newOption === "map"){
-            createMap();
-            sliderControlRoot.render(createMapSlider());
-        }
     };
-    
 
     return(
         <section id={id} className={`section ${isActive ? "active" : ""}`}>
@@ -291,8 +264,8 @@ const Section1 = ({id, isActive}) => {
             <div className="control" id="control">
                 <ToggleButtonTableMap value={selectedOption} onChange={handleOptionChange}/>
             </div>
-            <div className="canvas" id="canvas">{createTable(sortedData)}</div>
-            <div className="slider-control" id="slider-control">{createTableSlider()}</div>
+            <div className="canvas" id="canvas">{selectedOption==="table" ? createTable(sortedData) : createMap()}</div>
+            <div className="slider-control" id="slider-control">{selectedOption==="table" ? createTableSlider() : createMapSlider()}</div>
             <div className="resource" id="resource">Data source: IHME, Global Burden of Disease (2019)</div>
         </section>
     )

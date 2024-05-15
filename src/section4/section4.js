@@ -1,7 +1,7 @@
 import React from "react";
 import "../section/section.css";
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import ToggleButtonTableMap from "../toggleButton/toggleButtonTableMap";
+
 
 const Section4 = ({id, isActive}) => {
     return(
@@ -11,10 +11,7 @@ const Section4 = ({id, isActive}) => {
                 Disability-Adjusted Life Years (DALYs) per 100,000 individuals from all cancer types.
             </div>
             <div className="control" id="control">
-                <ToggleButtonGroup>
-                    <ToggleButton value="table">Table</ToggleButton>
-                    <ToggleButton value="map">Map</ToggleButton>
-                </ToggleButtonGroup>
+                <ToggleButtonTableMap value={"table"}/>
             </div>
             <div className="canvas" id="canvas"></div>
             <div className="resource" id="resource">Data source: IHME, Global Burden of Disease (2019)</div>

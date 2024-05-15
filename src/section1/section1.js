@@ -10,6 +10,9 @@ import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
 
+
+    
+
 const Section1 = ({id, isActive}) => {
     const [selectedOption, setSelectedOption] = useState("table");
     const [section1Data, setSection1Data] = useState([]);
@@ -28,7 +31,7 @@ const Section1 = ({id, isActive}) => {
                 console.log("fetchdata", error);
             } else{
                 setSection1Data(data);
-                console.log("fetched section1 data:", data);
+                /*console.log("fetched section1 data:", data);*/
             }
         });
     }, []);
@@ -46,8 +49,6 @@ const Section1 = ({id, isActive}) => {
     });
 
     /*console.log("dataByCountry",dataByCountry);*/
-
-    
 
     //memorize sorted Data
     const sortedData = useMemo(() => {
@@ -71,7 +72,7 @@ const Section1 = ({id, isActive}) => {
         return sorted; //return sorted array
     }, [sortBy, sortOrder, dataByCountry]);
     
-    console.log("sortedData", sortedData);
+    /*console.log("sortedData", sortedData);*/
     
     //sorting indicator
     const getSortingIcon = (column) => {
@@ -108,7 +109,7 @@ const Section1 = ({id, isActive}) => {
         } else {
             setYearRange(newRange);
         }
-       
+       console.log("Year Range on table slider:", newRange);
     };
 
     const handleMapYearChange = (event, newYear) => {
@@ -253,6 +254,8 @@ const Section1 = ({id, isActive}) => {
         );
     };
 
+
+    
     const handleOptionChange = (event, newOption) => {
         if (newOption !== null){
             setSelectedOption(newOption);
@@ -261,16 +264,19 @@ const Section1 = ({id, isActive}) => {
         }
         console.log("previous selectedOption: ", selectedOption);
         console.log("current selectedOption: ", newOption);
-        
+
         //indicate in whcih container to render the table
         const canvas = document.getElementById("canvas");
-        const canvasRoot = createRoot(canvas); //Call createRoot to create a React root for displaying content inside a browser DOM element.
+        let canvasRoot = createRoot(canvas);
+        //indicate in whcih container to render the slider
         const sliderControl = document.getElementById("slider-control");
-        const sliderControlRoot = createRoot(sliderControl);
+        let sliderControlRoot = createRoot(sliderControl);
+
         
         if(newOption === "table"){
             canvasRoot.render(createTable(sortedData));
             sliderControlRoot.render(createTableSlider());
+
         } else if(newOption === "map"){
             createMap();
             sliderControlRoot.render(createMapSlider());

@@ -22,7 +22,7 @@ const Section1 = ({id, isActive}) => {
     const [section1Data, setSection1Data] = useState([]);
     const [mapData, setMapData] = useState([]);
     const [yearRange, setYearRange] = useState([1990, 2019]);
-    const [mapYear, setMapYear] = useState(2009);
+    const [mapYear, setMapYear] = useState(2019);
     const minRangeDistance = 1;
     const [sortBy, setSortBy] = useState("Entity");
     const [sortOrder, setSortOrder] = useState("asc");
@@ -69,14 +69,16 @@ const Section1 = ({id, isActive}) => {
 
         //add country code from iso to the data
         if (!dataByCountry[row.Entity].hasOwnProperty("id")) {
-            const numericCode = iso3166Lookup.findCountry(row.Entity, "num3");
-            if(numericCode){
-                dataByCountry[row.Entity].id = numericCode;
+            const countryDetail = iso3166Lookup.findAlpha3(row.Code); //Find country details by ISO 3166-1 Alpha-3
+            console.log("countryDetail", countryDetail);
+            if(countryDetail){
+                dataByCountry[row.Entity].id = countryDetail.num3;
             }
         }
     });
 
     console.log("dataByCountry",dataByCountry);
+    console.log("all country names from lookup",iso3166Lookup.getAllCountryNames());
 
     //memorize sorted Data
     const sortedData = useMemo(() => {
@@ -217,7 +219,7 @@ const Section1 = ({id, isActive}) => {
 
     const createMap = () => {
         return(
-            <WorldMap/>
+            <WorldMap mapYear={mapYear} dataByCountry={dataByCountry}/>
         )
     };
 

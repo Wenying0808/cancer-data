@@ -6,7 +6,7 @@ import "../section/section.css";
 import "./section1_table.css";
 import section1Dataset from './section1data.csv';
 import ToggleButtonTableMap from "../toggleButton/toggleButtonTableMap";
-import { Table, TableHead, TableRow, TableCell, TableBody, Box, Slider } from '@mui/material';
+import { Table, TableHead, TableRow, TableCell, TableBody, Box, Slider, Select, MenuItem } from '@mui/material';
 import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
@@ -19,6 +19,7 @@ const Section1 = ({id, isActive}) => {
     const worldAltasURL="https://unpkg.com/world-atlas@1.1.4/world/50m.json";
 
     const [selectedOption, setSelectedOption] = useState("table");
+    const [selectedContinent, setSelectedContinent] = useState("World");
     const [section1Data, setSection1Data] = useState([]);
     const [mapData, setMapData] = useState([]);
     const [yearRange, setYearRange] = useState([1990, 2019]);
@@ -273,6 +274,10 @@ const Section1 = ({id, isActive}) => {
         /*console.log("current selectedOption: ", newOption);*/
     };
 
+    const handleContinentChange = (event) => {
+        setSelectedContinent(event.target.value);
+    };
+
     return(
         <section id={id} className={`section ${isActive ? "active" : ""}`}>
             <div className="title" id="title">
@@ -283,6 +288,21 @@ const Section1 = ({id, isActive}) => {
             <div className="description" id="description">The estimated share of the total population with any form of cancer.</div>
             <div className="control" id="control">
                 <ToggleButtonTableMap value={selectedOption} onChange={handleOptionChange}/>
+                {selectedOption==="map" 
+                    ? 
+                    <Select sx={{width: "150px", height:"32px"}} value={selectedContinent} onChange={handleContinentChange}>
+                        <MenuItem value="World">World</MenuItem>
+                        <MenuItem value="Africa">Africa</MenuItem>
+                        <MenuItem value="North America">North America</MenuItem>
+                        <MenuItem value="South America">South America</MenuItem>
+                        <MenuItem value="Asia">Asia</MenuItem>
+                        <MenuItem value="Europe">Europe</MenuItem>
+                        <MenuItem value="Oceania">Oceania</MenuItem>
+                    </Select> 
+                    :
+                    ""
+                }
+                
             </div>
             <div className="canvas" id="canvas">{selectedOption==="table" ? createTable(sortedData) : createMap()}</div>
             <div className="slider-control" id="slider-control">{selectedOption==="table" ? createTableSlider() : createMapSlider()}</div>

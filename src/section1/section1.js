@@ -77,8 +77,8 @@ const Section1 = ({id, isActive}) => {
         }
     });
 
-    console.log("dataByCountry",dataByCountry);
-    console.log("all country names from lookup",iso3166Lookup.getAllCountryNames());
+    console.log("Section1 dataByCountry:",dataByCountry);
+    console.log("all country names from lookup: ",iso3166Lookup.getAllCountryNames());
 
     //memorize sorted Data
     const sortedData = useMemo(() => {
@@ -269,8 +269,8 @@ const Section1 = ({id, isActive}) => {
         if (newOption !== null){
             setSelectedOption(newOption);
         }
-        console.log("previous selectedOption: ", selectedOption);
-        console.log("current selectedOption: ", newOption);
+        /*console.log("previous selectedOption: ", selectedOption);*/
+        /*console.log("current selectedOption: ", newOption);*/
     };
 
     return(

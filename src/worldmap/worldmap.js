@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react";
 import * as d3 from "d3";
 import { geoEqualEarth, geoPath } from "d3-geo";
 import * as topojson from 'topojson-client';
+import iso3166Lookup from "iso3166-lookup";
 
 const WorldMap = ({mapYear, dataByCountry}) =>{
 
@@ -21,7 +22,6 @@ const WorldMap = ({mapYear, dataByCountry}) =>{
             const worldFeatures = topojson.feature(topoJSONData, topoJSONData.objects.countries);
             setMapFeatures(worldFeatures);
             console.log("data", worldFeatures);
-            
         })
         .catch((error) => {
             console.error("Error fetching world atlas data:", error);
@@ -52,14 +52,23 @@ const WorldMap = ({mapYear, dataByCountry}) =>{
     console.log("selectedYearValueByCountry", selectedYearValueByCountry);
     console.log("minOfSelectedYearValueByCountry", minOfSelectedYearValueByCountry);
     console.log("maxOfSelectedYearValueByCountry", maxOfSelectedYearValueByCountry);
-    console.log("Data for country 840:", selectedYearValueByCountry[840]); // Log data for country 840
-    console.log("Data for country 826:", selectedYearValueByCountry[826]);
-    console.log("Data for country 804:", selectedYearValueByCountry[804]);
 
-     // Define color scale with default domain (if no valid data)
+    // Define color scale with default domain (if no valid data)
     const colorScale = d3.scaleSequential(d3.interpolateOranges)
-                            .domain([minOfSelectedYearValueByCountry, maxOfSelectedYearValueByCountry]) 
+                            .domain([0, 30]) 
 
+    //tooltip
+    const tooltip = d3.select("body")
+                        .append("div")
+                        .append("id", "tooltip")
+                        .style("position", "absolute")
+                        .style("visibility", "hidden")
+                        .style("background-color", "white")
+                        .style("box-shadow", "0px 2px 20px 0px rgba(0, 0, 0, 0.35)")
+                        .style("border-radius", "8px")
+                        .style("padding", "16px")
+                        .style("font-family", "sans-serif")
+                        .style("z-index", 10);
     return(
         <>
             <svg width="900px" height ="480px">
@@ -67,14 +76,24 @@ const WorldMap = ({mapYear, dataByCountry}) =>{
                     {mapFeatures.features && mapFeatures.features.map((feature) => {
                         const countryId = feature.id;
                         const numberValue = selectedYearValueByCountry[countryId];
+                        const countryName = iso3166Lookup.findNum3(countryId, "name");
 
                             return(
                                 <path
                                     key={feature.id}
                                     id={feature.id}
+                                    className={countryId}
                                     d={path(feature)}
                                     fill={colorScale(numberValue)}
                                     stroke="white"
+                                    onMouseOver={()=>{
+                                        tooltip.style("visibility", "visible")
+                                        tooltip.html(
+                                            `${countryName}<br><br>${numberValue ? numberValue : "No data available"}`
+                                        )
+                                        tooltip.style("left", "600px").style("top", "180px");
+                                    }}
+                                    onMouseOut={() => tooltip.style("visibility", "hidden")}
                                 />
                             );
                     

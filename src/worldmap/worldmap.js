@@ -68,7 +68,8 @@ const WorldMap = ({mapYear, dataByCountry}) =>{
                         .style("border-radius", "8px")
                         .style("padding", "16px")
                         .style("font-family", "sans-serif")
-                        .style("z-index", 10);
+                        .style("z-index", 10)
+                        .style("pointer-events", "none"); // Disable pointer events to prevent tooltip from interfering with mouse events
     return(
         <>
             <svg width="900px" height ="480px">
@@ -84,16 +85,26 @@ const WorldMap = ({mapYear, dataByCountry}) =>{
                                     id={feature.id}
                                     className={countryId}
                                     d={path(feature)}
-                                    fill={colorScale(numberValue)}
+                                    fill={numberValue ? colorScale(numberValue) : "gray"}
                                     stroke="white"
-                                    onMouseOver={()=>{
+                                    strokeWidth={1}
+                                    onMouseOver={(event)=>{
+                                        const [px, py] = d3.pointer(event);
                                         tooltip.style("visibility", "visible")
-                                        tooltip.html(
-                                            `${countryName}<br><br>${numberValue ? numberValue : "No data available"}`
-                                        )
-                                        tooltip.style("left", "600px").style("top", "180px");
+                                                .html(
+                                                        `${countryName}<br><br>${numberValue ? numberValue : "No data available"}`
+                                                )
+                                                .style("left", `${px + 300}px`)
+                                                .style("top", `${py + 100}px`);
+                                        
+                                        // Change the stroke width and color on hover    
+                                        d3.select(event.currentTarget).attr("stroke", "black");
+
                                     }}
-                                    onMouseOut={() => tooltip.style("visibility", "hidden")}
+                                    onMouseOut={(event) => {
+                                        tooltip.style("visibility", "hidden")
+                                        d3.select(event.currentTarget).attr("stroke", "white");
+                                    }}
                                 />
                             );
                     

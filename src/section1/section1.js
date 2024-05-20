@@ -16,12 +16,9 @@ console.log("topojson",topojson); //check if topojson is imported
 
 const Section1 = ({id, isActive}) => {
 
-    const worldAltasURL="https://unpkg.com/world-atlas@1.1.4/world/50m.json";
-
     const [selectedOption, setSelectedOption] = useState("table");
     const [selectedContinent, setSelectedContinent] = useState("World");
     const [section1Data, setSection1Data] = useState([]);
-    const [mapData, setMapData] = useState([]);
     const [yearRange, setYearRange] = useState([1990, 2019]);
     const [mapYear, setMapYear] = useState(2019);
     const minRangeDistance = 1;
@@ -40,22 +37,6 @@ const Section1 = ({id, isActive}) => {
             }
         });
     }, []);
-
-    //fetch data from json
-    useEffect(() => {
-        fetch(worldAltasURL)
-        .then((response)=> response.json())
-        .then((topoJSONData)=>{
-            setMapData(topoJSONData);
-            console.log("topoJSONData",topoJSONData);
-            const worldFeatures = topojson.feature(topoJSONData, 'countries');
-            console.log("data", worldFeatures);
-            
-        })
-    }, []);
-
-
-    console.log("mapData", mapData);
 
     //group data per country
     const dataByCountry = {};
@@ -219,9 +200,7 @@ const Section1 = ({id, isActive}) => {
     };
 
     const createMap = () => {
-        return(
-            <WorldMap mapYear={mapYear} dataByCountry={dataByCountry}/>
-        )
+        return(<WorldMap mapYear={mapYear} dataByCountry={dataByCountry} selectedContinent={selectedContinent}/>);
     };
 
     const createTableSlider = () => {
@@ -281,7 +260,7 @@ const Section1 = ({id, isActive}) => {
     return(
         <section id={id} className={`section ${isActive ? "active" : ""}`}>
             <div className="title" id="title">
-                Prevalence Around The World 
+                {`Prevalence Around The ${selectedContinent}`}
                 {selectedOption === "table" && ` (Years: ${yearRange[0]} - ${yearRange[1]})`} 
                 {selectedOption === "map" && ` (Year: ${mapYear})`} 
             </div>

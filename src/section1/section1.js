@@ -6,7 +6,7 @@ import "../section/section.css";
 import "./section1_table.css";
 import section1Dataset from './section1data.csv';
 import ToggleButtonTableMap from "../toggleButton/toggleButtonTableMap";
-import { Table, TableHead, TableRow, TableCell, TableBody, Box, Slider, Select, MenuItem } from '@mui/material';
+import { Table, TableHead, TableRow, TableCell, TableBody, Box, Slider, Select, MenuItem, FormControl } from '@mui/material';
 import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
@@ -289,16 +289,19 @@ const Section1 = ({id, isActive}) => {
             <div className="control" id="control">
                 <ToggleButtonTableMap value={selectedOption} onChange={handleOptionChange}/>
                 {selectedOption==="map" 
-                    ? 
-                    <Select sx={{width: "150px", height:"32px"}} value={selectedContinent} onChange={handleContinentChange}>
-                        <MenuItem value="World">World</MenuItem>
-                        <MenuItem value="Africa">Africa</MenuItem>
-                        <MenuItem value="North America">North America</MenuItem>
-                        <MenuItem value="South America">South America</MenuItem>
-                        <MenuItem value="Asia">Asia</MenuItem>
-                        <MenuItem value="Europe">Europe</MenuItem>
-                        <MenuItem value="Oceania">Oceania</MenuItem>
-                    </Select> 
+                    ?
+                    <FormControl size="small">
+                        <Select sx={{width: "150px"}} value={selectedContinent} onChange={handleContinentChange}>
+                            <MenuItem value="World">World</MenuItem>
+                            <MenuItem value="Africa">Africa</MenuItem>
+                            <MenuItem value="North America">North America</MenuItem>
+                            <MenuItem value="South America">South America</MenuItem>
+                            <MenuItem value="Asia">Asia</MenuItem>
+                            <MenuItem value="Europe">Europe</MenuItem>
+                            <MenuItem value="Oceania">Oceania</MenuItem>
+                        </Select> 
+                    </FormControl>
+                    
                     :
                     ""
                 }

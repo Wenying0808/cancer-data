@@ -5,7 +5,7 @@
     display: flex;
     width: auto;
     height: 100vh;
-    padding: 30px;
+    padding: 20px;
     flex-direction: column;
     align-items: flex-start;
     gap: 40px;
@@ -19,7 +19,7 @@
 }
 
 .navbar-header{
-    width:100%;
+    width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -29,10 +29,10 @@
 span{
     color: #000;
     font-family: "Source Sans Pro";
-    font-size: 18px;
+    font-size: 16px;
     font-style: normal;
     font-weight: 700;
-    line-height: 24px; /* 133.333% */
+    line-height: 20px; 
     text-transform: capitalize;
 }
 
@@ -54,7 +54,7 @@ a{
     display: border-box;
     text-decoration: none;
     display: flex;
-    width: 210px;
+    width: 160px;
     padding: 10px 20px;
     align-items: center;
 
@@ -62,10 +62,10 @@ a{
 
     color: black;
     font-family: "Source Sans Pro";
-    font-size: 16px;
+    font-size: 12px;
     font-style: normal;
     font-weight: 600;
-    line-height: 20px; /* 125% */
+    line-height: 16px; 
     text-transform: capitalize;
 
 }

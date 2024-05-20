@@ -72,7 +72,7 @@ const WorldMap = ({mapYear, dataByCountry}) =>{
                         .style("pointer-events", "none"); // Disable pointer events to prevent tooltip from interfering with mouse events
     return(
         <>
-            <svg width="900px" height ="480px">
+            <svg width="900px" height ="440px">
                 <g>
                     {mapFeatures.features && mapFeatures.features.map((feature) => {
                         const countryId = feature.id;

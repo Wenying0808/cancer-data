@@ -7,7 +7,7 @@ import InsertChartOutlinedIcon from '@mui/icons-material/InsertChartOutlined';
 
 const ToggleButtonTableChart = ({value, onChange}) => {
     return (
-        <ToggleButtonGroup value={value} onChange={onChange} exclusive>
+        <ToggleButtonGroup size="small" value={value} onChange={onChange} exclusive>
             <ToggleButton value="table" sx={{gap:"8px"}}>
                 <WindowOutlinedIcon fontSize="small"/>
                 Table

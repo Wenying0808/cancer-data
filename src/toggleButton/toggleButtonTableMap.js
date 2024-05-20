@@ -7,7 +7,7 @@ import PublicOutlinedIcon from '@mui/icons-material/PublicOutlined';
 
 const ToggleButtonTableMap = ({value, onChange}) => {
     return (
-        <ToggleButtonGroup value={value} onChange={onChange} exclusive >
+        <ToggleButtonGroup size="small" value={value} onChange={onChange} exclusive >
             <ToggleButton value="table" sx={{alignItems:"center", gap:"8px"}}>
                 <WindowOutlinedIcon fontSize="small"/>
                 Table

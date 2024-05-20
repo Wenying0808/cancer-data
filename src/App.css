@@ -1,20 +1,20 @@
-.App {
-
-  height:100%;
+.App{
+  display: flex;
 }
 
 .sections{
-  position: absolute;
-  left:312px;
-  top:0;
-
+  margin-left: 312px;
+  flex: 1;
   display: flex;
-  width: calc(100%-312px);
-  padding: 40px;
   flex-direction: column;
+  padding: 40px;
   align-items: center;
   gap: 40px;
+
+  transition: margin-left 0.3s;
 }
 
-
+.navbar-collapsed .sections{
+  margin-left: 80px;
+}
 

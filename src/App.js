@@ -10,13 +10,24 @@ import './App.css';
 function App() {
 
   const [activeSelection, setActiveSelection] = useState('section1');
-  const handleNavbarClcik = (selectionId) => {
+  const [isNavbarExpanded, setIsNavbarExpanded] = useState(true);
+
+  const handleNavbarSectionClcik = (selectionId) => {
     setActiveSelection(selectionId);
-  }
+  };
+
+  const handleNavbarToggle = () => {
+    setIsNavbarExpanded(!isNavbarExpanded);
+};
 
   return (
-    <div className="App">
-      <Navbar onNavbarClick={handleNavbarClcik} activeSelection={activeSelection}/>
+    <div className={`App ${isNavbarExpanded ? "navbar-expanded" : "navbar-collapsed"}`}>
+      <Navbar
+        isExpanded={isNavbarExpanded}
+        handleExpandChange={handleNavbarToggle}
+        onNavbarClick={handleNavbarSectionClcik} 
+        activeSelection={activeSelection}
+      />
       <div className='sections'>
         <Section1 id="section1" isActive={activeSelection === "section1"}/>
         <Section2 id="section2" isActive={activeSelection === "section2"}/>

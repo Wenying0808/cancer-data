@@ -11,6 +11,7 @@ import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
 import WorldMap from "../worldmap/worldmap";
+import continentCountryIds from "../worldmap/ContinentCountryId";
     
 console.log("topojson",topojson); //check if topojson is imported
 
@@ -80,11 +81,20 @@ const Section1 = ({id, isActive}) => {
                 }else{
                 return numericSort(a,b);
                 }
-        })
-        return sorted; //return sorted array
-    }, [sortBy, sortOrder, dataByCountry]);
+        });
+
+        //filter data based on the selected continent
+        return sorted.filter(row => {
+            if (selectedContinent === "World"){
+                return true; // show all data and return sorted array
+            } else {
+                const countryId = row.id;
+                return continentCountryIds[selectedContinent].includes(parseInt(countryId));
+            }
+        }); 
+    }, [sortBy, sortOrder, dataByCountry, selectedContinent]);
     
-    /*console.log("sortedData", sortedData);*/
+    console.log("sortedData", sortedData);
     
     //sorting indicator
     const getSortingIcon = (column) => {
@@ -267,23 +277,18 @@ const Section1 = ({id, isActive}) => {
             <div className="description" id="description">The estimated share of the total population with any form of cancer.</div>
             <div className="control" id="control">
                 <ToggleButtonTableMap value={selectedOption} onChange={handleOptionChange}/>
-                {selectedOption==="map" 
-                    ?
-                    <FormControl size="small">
-                        <Select sx={{width: "150px"}} value={selectedContinent} onChange={handleContinentChange}>
-                            <MenuItem value="World">World</MenuItem>
-                            <MenuItem value="Africa">Africa</MenuItem>
-                            <MenuItem value="North America">North America</MenuItem>
-                            <MenuItem value="South America">South America</MenuItem>
-                            <MenuItem value="Asia">Asia</MenuItem>
-                            <MenuItem value="Europe">Europe</MenuItem>
-                            <MenuItem value="Oceania">Oceania</MenuItem>
-                        </Select> 
-                    </FormControl>
-                    
-                    :
-                    ""
-                }
+                <FormControl size="small">
+                    <Select sx={{width: "150px"}} value={selectedContinent} onChange={handleContinentChange}>
+                        <MenuItem value="World">World</MenuItem>
+                        <MenuItem value="Africa">Africa</MenuItem>
+                        <MenuItem value="North America">North America</MenuItem>
+                        <MenuItem value="South America">South America</MenuItem>
+                        <MenuItem value="Asia">Asia</MenuItem>
+                        <MenuItem value="Europe">Europe</MenuItem>
+                        <MenuItem value="Oceania">Oceania</MenuItem>
+                    </Select> 
+                </FormControl>
+                 
                 
             </div>
             <div className="canvas" id="canvas">{selectedOption==="table" ? createTable(sortedData) : createMap()}</div>

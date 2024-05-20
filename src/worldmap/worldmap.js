@@ -52,8 +52,8 @@ const WorldMap = ({mapYear, dataByCountry, selectedContinent}) => {
     console.log("maxOfSelectedYearValueByCountry", maxOfSelectedYearValueByCountry);
 
     const filteredMapFeatures = selectedContinent === "World"
-    ? mapFeatures.features
-    : mapFeatures.features.filter(feature => continentCountryIds[selectedContinent].includes(parseInt(feature.id)));
+        ? (mapFeatures.features || []) // Provide a default empty array if mapFeatures.features is undefined
+        : (mapFeatures.features || []).filter(feature => continentCountryIds[selectedContinent].includes(parseInt(feature.id)));
 
     // Define color scale with default domain (if no valid data)
     const colorScale = d3.scaleSequential(d3.interpolateOranges)

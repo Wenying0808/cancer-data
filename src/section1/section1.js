@@ -63,36 +63,35 @@ const Section1 = ({id, isActive}) => {
     console.log("Section1 dataByCountry:",dataByCountry);
     console.log("all country names from lookup: ",iso3166Lookup.getAllCountryNames());
 
-    //memorize sorted Data
-    const sortedData = useMemo(() => {
-        //numeric sort
-        const numericSort = (a, b) => {
-            const aValue = parseFloat(a[sortBy]) || 0;
-            const bValue = parseFloat(b[sortBy]) || 0;
-            return sortOrder === 'asc' ? aValue-bValue : bValue-aValue;
-        };
-
-        const sorted = [...Object.values(dataByCountry)]; //copy dataByCountry
-            sorted.sort((a, b) => {
-                if(sortBy === "Entity") {
-                const aValue = a[sortBy] || '';
-                const bValue = b[sortBy] || '';
-                return sortOrder === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-                }else{
-                return numericSort(a,b);
-                }
-        });
-
-        //filter data based on the selected continent
-        return sorted.filter(row => {
+    //memorize filter Data
+    const filteredDataByContinent = useMemo(() => {
+        const filtered = [...Object.values(dataByCountry)]; //copy dataByCountry
+        return filtered.filter(row => {
             if (selectedContinent === "World"){
-                return true; // show all data and return sorted array
+                return true; // show all data
             } else {
                 const countryId = row.id;
                 return continentCountryIds[selectedContinent].includes(parseInt(countryId));
             }
-        }); 
-    }, [sortBy, sortOrder, dataByCountry, selectedContinent]);
+        })
+    },[dataByCountry, selectedContinent])
+
+    //memorize sorted Data
+    const sortedData = useMemo(() => {
+
+        return [...filteredDataByContinent].sort((a, b) => {
+            if(sortBy === "Entity") {
+                const aValue = a[sortBy] || '';
+                const bValue = b[sortBy] || '';
+                return sortOrder === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+            }else{ //numerical sorting
+                const aValue = parseFloat(a[sortBy]) || 0;
+                const bValue = parseFloat(b[sortBy]) || 0;
+                return sortOrder === 'asc' ? aValue-bValue : bValue-aValue;
+            }
+        });
+
+    }, [sortBy, sortOrder, filteredDataByContinent]);
     
     console.log("sortedData", sortedData);
     

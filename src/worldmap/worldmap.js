@@ -117,13 +117,17 @@ const WorldMap = ({mapYear, dataByCountry, selectedContinent}) => {
                 </g>
 
                 {/*legend*/}
-                <g transform="translate(10, 150)">
+                <g transform="translate(10, 120)">
                     {d3.range(0, 30, (30 - 0)/10).reverse().map((d, i)=>(
                         <g key={i} transform={`translate(0, ${i * 20})`}>
                             <rect width="20px" height="20px" fill={colorScale(d)}></rect>
                             <text x="28px" y="20px" fontSize="10px">{d.toFixed()}</text>
                         </g>
                     ))}
+                    <g transform="translate(0, 240)">
+                        <rect width="20px" height="20px" fill="gray"></rect>
+                        <text x="28px" y="14px" fontSize="10px">No Data</text>
+                    </g>
                 </g>
             </svg>
         </>

@@ -60,8 +60,8 @@ const Section1 = ({id, isActive}) => {
         }
     });
 
-    console.log("Section1 dataByCountry:",dataByCountry);
-    console.log("all country names from lookup: ",iso3166Lookup.getAllCountryNames());
+    /*console.log("Section1 dataByCountry:",dataByCountry);*/
+    /*console.log("all country names from lookup: ",iso3166Lookup.getAllCountryNames());*/
 
     //memorize filter Data
     const filteredDataByContinent = useMemo(() => {

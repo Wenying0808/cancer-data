@@ -1,8 +1,28 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
+import * as d3 from "d3";
+import section2Dataset from './section2data.csv';
 import "../section/section.css";
 import ToggleButtonTableChart from "../toggleButton/toggleButtonTableChart";
 
 const Section2 = ({id, isActive}) => {
+
+    const[section2Data, setSection2Data]=useState([]);
+
+    //fetch section 2 data on initail render
+    useEffect(() => {
+        d3.csv(section2Dataset).then(function(data, error){
+            if(error){
+                console.log("fetch section 2 data from local csv:", error);
+            }else{
+                setSection2Data(data);
+            }
+        })
+    }, [])
+
+    console.log("Section 2 Fetched csv Data:", section2Data);
+
+
+
     return(
         <section id={id} className={`section ${isActive ? "active" : ""}`}>
             <div className="title" id="title">Prevalence Of cancer by type</div>

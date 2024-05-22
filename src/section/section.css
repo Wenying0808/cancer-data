@@ -48,10 +48,6 @@ section{
     gap: 20px;
 }
 
-.slider-label{
-    font-size: 12px;;
-}
-
 .canvas{
     display: border-box;
     margin: 20px 40px 20px 40px;

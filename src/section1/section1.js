@@ -6,6 +6,8 @@ import "../section/section.css";
 import "./section1_table.css";
 import section1Dataset from './section1data.csv';
 import ToggleButtonTableMap from "../toggleButton/toggleButtonTableMap";
+import YearRangeSlider from "../slider/YearRangeSlider";
+import YearSlider from "../slider/YearSlider";
 import { Table, TableHead, TableRow, TableCell, TableBody, Box, Slider, Select, MenuItem, FormControl } from '@mui/material';
 import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
@@ -17,12 +19,11 @@ console.log("topojson",topojson); //check if topojson is imported
 
 const Section1 = ({id, isActive}) => {
 
-    const [selectedOption, setSelectedOption] = useState("table");
+    const [selectedTabOption, setSelectedTabOption] = useState("table");
     const [selectedContinent, setSelectedContinent] = useState("World");
     const [section1Data, setSection1Data] = useState([]);
     const [yearRange, setYearRange] = useState([1990, 2019]);
     const [mapYear, setMapYear] = useState(2019);
-    const minRangeDistance = 1;
     const [sortBy, setSortBy] = useState("Entity");
     const [sortOrder, setSortOrder] = useState("asc");
     const [hoveredColumn, setHoveredColumn] = useState(null);
@@ -118,6 +119,7 @@ const Section1 = ({id, isActive}) => {
     }
 
     //set the range of the year
+    const minRangeDistance = 1;
     const handleYearRangeChange = (event, newRange, activeThumb) => {
         if(newRange[1]-newRange[0] < minRangeDistance){
             if(activeThumb === 0){
@@ -130,7 +132,7 @@ const Section1 = ({id, isActive}) => {
         } else {
             setYearRange(newRange);
         }
-       console.log("Year Range on table slider:", newRange);
+       console.log("Year Range on section 1 table slider:", newRange);
     };
 
     const handleMapYearChange = (event, newYear) => {
@@ -214,49 +216,20 @@ const Section1 = ({id, isActive}) => {
 
     const createTableSlider = () => {
         return(
-            <>
-                <div className="slider-label">1990</div>
-                    <Box sx={{ width: 600 }}>
-                        <Slider 
-                            value={yearRange} 
-                            onChange={handleYearRangeChange}
-                            valueLabelDisplay="auto"
-                            getAriaValueText={valueText}
-                            min={1990} 
-                            max={2019}
-                            disableSwap
-                        />
-                    </Box>
-                <div className="slider-label">2019</div>
-            </>
-                
+            <YearRangeSlider yearRange={yearRange} handleYearRangeChange={handleYearRangeChange}/>
         );
-    }
+    };
 
     const createMapSlider = () => {
         return(
-            <>
-                <div className="slider-label">1990</div>
-                        <Box sx={{ width: 600 }}>
-                            <Slider 
-                                track={false}
-                                value={mapYear} 
-                                onChange={handleMapYearChange}
-                                valueLabelDisplay="auto"
-                                getAriaValueText={valueText}
-                                min={1990} 
-                                max={2019}
-                            />
-                        </Box>
-                    <div className="slider-label">2019</div>
-            </>
+            <YearSlider year={mapYear} handleYearChange={handleMapYearChange}/>
         );
     };
 
     
-    const handleOptionChange = (event, newOption) => {
-        if (newOption !== null){
-            setSelectedOption(newOption);
+    const handleTabOptionChange = (event, newTabOption) => {
+        if (newTabOption !== null){
+            setSelectedTabOption(newTabOption);
         }
         /*console.log("previous selectedOption: ", selectedOption);*/
         /*console.log("current selectedOption: ", newOption);*/
@@ -270,12 +243,12 @@ const Section1 = ({id, isActive}) => {
         <section id={id} className={`section ${isActive ? "active" : ""}`}>
             <div className="title" id="title">
                 {`Prevalence Around The ${selectedContinent}`}
-                {selectedOption === "table" && ` (Years: ${yearRange[0]} - ${yearRange[1]})`} 
-                {selectedOption === "map" && ` (Year: ${mapYear})`} 
+                {selectedTabOption === "table" && ` (Years: ${yearRange[0]} - ${yearRange[1]})`} 
+                {selectedTabOption === "map" && ` (Year: ${mapYear})`} 
             </div>
             <div className="description" id="description">The estimated share of the total population with any form of cancer.</div>
             <div className="control" id="control">
-                <ToggleButtonTableMap value={selectedOption} onChange={handleOptionChange}/>
+                <ToggleButtonTableMap value={selectedTabOption} onChange={handleTabOptionChange}/>
                 <FormControl size="small">
                     <Select sx={{width: "150px"}} value={selectedContinent} onChange={handleContinentChange}>
                         <MenuItem value="World">World</MenuItem>
@@ -290,8 +263,8 @@ const Section1 = ({id, isActive}) => {
                  
                 
             </div>
-            <div className="canvas" id="canvas">{selectedOption==="table" ? createTable(sortedData) : createMap()}</div>
-            <div className="slider-control" id="slider-control">{selectedOption==="table" ? createTableSlider() : createMapSlider()}</div>
+            <div className="canvas" id="canvas">{selectedTabOption==="table" ? createTable(sortedData) : createMap()}</div>
+            <div className="slider-control" id="slider-control">{selectedTabOption==="table" ? createTableSlider() : createMapSlider()}</div>
             <div className="resource" id="resource">Data source: IHME, Global Burden of Disease (2019)</div>
         </section>
     )

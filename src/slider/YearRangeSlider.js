@@ -21,6 +21,7 @@ const YearRangeSlider = ({yearRange, handleYearRangeChange}) => {
                         min={1990} 
                         max={2019}
                         disableSwap
+                        color="primary"
                     />
                 </Box>
             <div className="slider-label">2019</div>

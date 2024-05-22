@@ -113,11 +113,6 @@ const Section1 = ({id, isActive}) => {
         setHoveredColumn(null);
     }
 
-    //display value for the slider
-    function valueText(value){
-        return value;
-    }
-
     //set the range of the year
     const minRangeDistance = 1;
     const handleYearRangeChange = (event, newRange, activeThumb) => {
@@ -139,7 +134,6 @@ const Section1 = ({id, isActive}) => {
         console.log("newYear on map slider", newYear)
         setMapYear(newYear);
     };
-
 
     const createTable = (data) => {
         
@@ -226,7 +220,6 @@ const Section1 = ({id, isActive}) => {
         );
     };
 
-    
     const handleTabOptionChange = (event, newTabOption) => {
         if (newTabOption !== null){
             setSelectedTabOption(newTabOption);

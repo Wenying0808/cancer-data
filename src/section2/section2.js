@@ -81,7 +81,6 @@ const Section2 = ({id, isActive}) => {
             dataByCountry[country][year][cancerType] = row[cancerMapping[cancerType]];
         })
     })
-
     console.log("dataByCountry in section 2:", dataByCountry);
 
 
@@ -121,6 +120,33 @@ const Section2 = ({id, isActive}) => {
         ) 
     };
 
+    //create table
+    const createTable = (data) => {
+        return(
+            <div style={{ maxHeight: "400px", overflowY: "auto" }}>
+                <Table>
+                    {/*table header: country, cancer type, table subheader: year 1 and year 2 */}
+                    <TableHead>
+                        <TableRow>
+                            <TableCell rowSpan={2} style={{ minWidth: '150px' }}>Country / Region</TableCell>
+                            {cancerTypes.map((type) => (
+                            <TableCell key={type} colSpan={2} style={{ minWidth: '300px' }} align='center'>{type}</TableCell>
+                            ))}
+                        </TableRow>
+                        <TableRow>
+                            {cancerTypes.map((type) => (
+                                yearRange.map((year) => (
+                                    <TableCell key={`${type}-${year}`} >{year}</TableCell>
+                                ))
+                            ))}
+                        </TableRow>
+                    </TableHead>
+                    {/*row: country, year 1 and year 2 */}
+                </Table>
+            </div>
+        );
+    };
+
     return(
         <section id={id} className={`section ${isActive ? "active" : ""}`}>
             <div className="title" id="title">Prevalence Of cancer by type</div>
@@ -133,7 +159,7 @@ const Section2 = ({id, isActive}) => {
                     </Select> 
                 </FormControl>
             </div>
-            <div className="canvas" id="canvas"></div>
+            <div className="canvas" id="canvas">{createTable(dataByCountry)}</div>
             <div className="slider-control" id="slider-control">{createSlider()}</div>
             <div className="resource" id="resource">Data source: IHME, Global Burden of Disease (2019)</div>
         </section>

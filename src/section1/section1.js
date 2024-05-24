@@ -8,7 +8,7 @@ import section1Dataset from './section1data.csv';
 import ToggleButtonTableMap from "../toggleButton/toggleButtonTableMap";
 import YearRangeSlider from "../slider/YearRangeSlider";
 import YearSlider from "../slider/YearSlider";
-import { Table, TableHead, TableRow, TableCell, TableBody, Box, Slider, Select, MenuItem, FormControl } from '@mui/material';
+import { Table, TableHead, TableRow, TableCell, TableBody, Select, MenuItem, FormControl } from '@mui/material';
 import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
 import SwapVertIcon from '@mui/icons-material/SwapVert';

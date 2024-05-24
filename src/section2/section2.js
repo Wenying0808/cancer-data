@@ -159,7 +159,7 @@ const Section2 = ({id, isActive}) => {
                                 rowSpan={2} 
                                 sx={{
                                     minWidth: '150px',
-                                    backgroundColor: 'lightgray',
+                                    backgroundColor: '#FBFBFB',
                                     position: 'sticky',
                                     top: 0,
                                     zIndex: 1,
@@ -174,11 +174,12 @@ const Section2 = ({id, isActive}) => {
                                     colSpan={2} 
                                     sx={{ 
                                         minWidth: '300px',
-                                        backgroundColor: 'lightgray',
+                                        backgroundColor: '#FBFBFB',
                                         position: 'sticky',
                                         top: 0,
                                         left: 182,
                                         zIndex: 1,
+                                        fontWeight:600,
                                     }} 
                                     align='center'
                                 >
@@ -192,9 +193,9 @@ const Section2 = ({id, isActive}) => {
                                     <TableCell 
                                         key={`${type}-${year}`}
                                         sx={{
-                                            backgroundColor: 'lightgray',
+                                            backgroundColor: '#FBFBFB',
                                             position: 'sticky',
-                                            top: 56,
+                                            top: 57,
                                             left: 182,
                                             zIndex: 1,
                                         }} 
@@ -208,21 +209,23 @@ const Section2 = ({id, isActive}) => {
                     {/*row: country, year 1 and year 2 */}
                     <TableBody>
                         {Object.keys(typeDataByCountry).map((country) => (
-                            <TableRow key={country}>
+                            <TableRow key={country} sx={{'&:hover':{backgroundColor:'#E5EBF8'}}}>
                                 <TableCell
                                     sx={{
                                         position: 'sticky',
                                         left: 0,
-                                        top: 114,
+                                        top: 115,
                                         zIndex: 1,
-                                        backgroundColor: 'white',
+                                        backgroundColor: '#F5F5F5',
                                     }}
                                 >
                                     {country}
                                 </TableCell>
                                 {cancerTypes.map((type) => (
                                     yearRange.map((year) => (
-                                        <TableCell key={`${country}-${type}-${year}`}>{typeDataByCountry[country][type][year]}</TableCell>
+                                        <TableCell key={`${country}-${type}-${year}`}>
+                                            {typeDataByCountry[country][type][year]}
+                                        </TableCell>
                                     ))
                                 ))}
                             </TableRow>
@@ -233,9 +236,15 @@ const Section2 = ({id, isActive}) => {
         );
     };
 
+    const createChart = () => {
+        return(
+            <div style={{backgroundColor:'black', width:'50px', height: '50px'}}></div>
+        );
+    };
+
     return(
         <section id={id} className={`section ${isActive ? "active" : ""}`}>
-            <div className="title" id="title">Prevalence Of cancer by type</div>
+            <div className="title" id="title">{`Prevalence Of cancer by type (${yearRange[0]} - ${yearRange[1]})`}</div>
             <div className="description" id="description">This related chart shows the estimated number of people with each type of cancer:</div>
             <div className="control" id="control">
                 <ToggleButtonTableChart value={selectedTabOption} onChange={handleTabOptionChange}/>
@@ -245,7 +254,7 @@ const Section2 = ({id, isActive}) => {
                     </Select> 
                 </FormControl>
             </div>
-            <div className="canvas" id="canvas">{createTable(dataByCountry)}</div>
+            <div className="canvas" id="canvas">{selectedTabOption==="table" ? createTable(dataByCountry) : createChart()}</div>
             <div className="slider-control" id="slider-control">{createSlider()}</div>
             <div className="resource" id="resource">Data source: IHME, Global Burden of Disease (2019)</div>
         </section>

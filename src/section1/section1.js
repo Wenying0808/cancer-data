@@ -178,8 +178,7 @@ const Section1 = ({id, isActive}) => {
                                     fontWeight: 600,
                                 }}
                             >
-                                {yearRange[0]}
-                                (%)
+                                {`${yearRange[0]} (%)`}
                                 {getSortingIcon(yearRange[0])}
                                 {hoveredColumn === yearRange[0] && <SwapVertIcon fontSize="small" sx={{color: "gray"}}/>}
                             </TableCell>
@@ -194,8 +193,7 @@ const Section1 = ({id, isActive}) => {
                                     fontWeight: 600,
                                 }}
                             >
-                                {yearRange[1]}
-                                (%)
+                                {`${yearRange[1]} (%)`}
                                 {getSortingIcon(yearRange[1])}
                                 {hoveredColumn === yearRange[1] && <SwapVertIcon fontSize="small" sx={{color: "gray"}}/>}
                             </TableCell>

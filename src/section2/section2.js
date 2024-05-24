@@ -200,7 +200,7 @@ const Section2 = ({id, isActive}) => {
                                             zIndex: 1,
                                         }} 
                                     >
-                                        {year}
+                                        {`${year} (%)`}
                                     </TableCell>
                                 ))
                             ))}

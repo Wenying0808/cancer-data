@@ -28,6 +28,9 @@ const Section2 = ({id, isActive}) => {
 
     //group data by country in an object
     const dataByCountry = {};
+    const yearDataByCountry={};
+    const typeDataByCountry={};
+
     // Mapping of cancer types to CSV columns
 
     const cancerMapping = {
@@ -61,27 +64,51 @@ const Section2 = ({id, isActive}) => {
         const year = row.Year;
         //create an obejct for each country if it doesn't exist
         if(!dataByCountry[country]){
-            dataByCountry[country]={}
+            dataByCountry[country]={};
         };
+
+        if(!yearDataByCountry[country]){
+            yearDataByCountry[country]={};
+        };
+
+        if(!typeDataByCountry[country]){
+            typeDataByCountry[country]={};
+        };
+
         //create year object to each country if it doesn't exist
         if(!dataByCountry[country][year]){
-            dataByCountry[country][year]={}
+            dataByCountry[country][year]={};
+        };
+
+        if(!yearDataByCountry[country][year]){
+            yearDataByCountry[country][year]={};
         };
 
         cancerTypes.forEach(cancerType => {
             //create cancer type object to each country if it doesn't exist
             if(!dataByCountry[country][cancerType]){
-                dataByCountry[country][cancerType]={}
+                dataByCountry[country][cancerType]={};
             };
             dataByCountry[country][cancerType][year] = row[cancerMapping[cancerType]];
+
+            if(!typeDataByCountry[country][cancerType]){
+                typeDataByCountry[country][cancerType]={};
+            };
+            typeDataByCountry[country][cancerType][year] = row[cancerMapping[cancerType]];
         })
 
         dataByCountry[country]["Code"] = row["Code"];
+        yearDataByCountry[country]["Code"] = row["Code"];
+        typeDataByCountry[country]["Code"] = row["Code"];
+
         cancerTypes.forEach(cancerType => {
             dataByCountry[country][year][cancerType] = row[cancerMapping[cancerType]];
+            yearDataByCountry[country][year][cancerType] = row[cancerMapping[cancerType]];
         })
     })
     console.log("dataByCountry in section 2:", dataByCountry);
+    console.log("yearDataByCountry in section 2:", yearDataByCountry);
+    console.log("typeDataByCountry in section 2:", typeDataByCountry);
 
 
     //change the tab option
@@ -142,6 +169,18 @@ const Section2 = ({id, isActive}) => {
                         </TableRow>
                     </TableHead>
                     {/*row: country, year 1 and year 2 */}
+                    <TableBody>
+                        {Object.keys(typeDataByCountry).map((country) => (
+                            <TableRow key={country}>
+                                <TableCell>{country}</TableCell>
+                                {cancerTypes.map((type) => (
+                                    yearRange.map((year) => (
+                                        <TableCell key={`${country}-${type}-${year}`}>{typeDataByCountry[country][type][year]}</TableCell>
+                                    ))
+                                ))}
+                            </TableRow>
+                        ))}
+                    </TableBody>
                 </Table>
             </div>
         );

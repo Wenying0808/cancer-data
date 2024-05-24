@@ -151,19 +151,56 @@ const Section2 = ({id, isActive}) => {
     const createTable = (data) => {
         return(
             <div style={{ maxHeight: "400px", overflowY: "auto" }}>
-                <Table>
+                <Table stickyHeader>
                     {/*table header: country, cancer type, table subheader: year 1 and year 2 */}
                     <TableHead>
                         <TableRow>
-                            <TableCell rowSpan={2} style={{ minWidth: '150px' }}>Country / Region</TableCell>
+                            <TableCell 
+                                rowSpan={2} 
+                                sx={{
+                                    minWidth: '150px',
+                                    backgroundColor: 'lightgray',
+                                    position: 'sticky',
+                                    top: 0,
+                                    zIndex: 1,
+                                    left: 0,
+                                }}
+                            >
+                                Country / Region
+                            </TableCell>
                             {cancerTypes.map((type) => (
-                            <TableCell key={type} colSpan={2} style={{ minWidth: '300px' }} align='center'>{type}</TableCell>
+                                <TableCell 
+                                    key={type} 
+                                    colSpan={2} 
+                                    sx={{ 
+                                        minWidth: '300px',
+                                        backgroundColor: 'lightgray',
+                                        position: 'sticky',
+                                        top: 0,
+                                        left: 182,
+                                        zIndex: 1,
+                                    }} 
+                                    align='center'
+                                >
+                                    {type}
+                                </TableCell>
                             ))}
                         </TableRow>
                         <TableRow>
                             {cancerTypes.map((type) => (
                                 yearRange.map((year) => (
-                                    <TableCell key={`${type}-${year}`} >{year}</TableCell>
+                                    <TableCell 
+                                        key={`${type}-${year}`}
+                                        sx={{
+                                            backgroundColor: 'lightgray',
+                                            position: 'sticky',
+                                            top: 56,
+                                            left: 182,
+                                            zIndex: 1,
+                                        }} 
+                                    >
+                                        {year}
+                                    </TableCell>
                                 ))
                             ))}
                         </TableRow>
@@ -172,7 +209,17 @@ const Section2 = ({id, isActive}) => {
                     <TableBody>
                         {Object.keys(typeDataByCountry).map((country) => (
                             <TableRow key={country}>
-                                <TableCell>{country}</TableCell>
+                                <TableCell
+                                    sx={{
+                                        position: 'sticky',
+                                        left: 0,
+                                        top: 114,
+                                        zIndex: 1,
+                                        backgroundColor: 'white',
+                                    }}
+                                >
+                                    {country}
+                                </TableCell>
                                 {cancerTypes.map((type) => (
                                     yearRange.map((year) => (
                                         <TableCell key={`${country}-${type}-${year}`}>{typeDataByCountry[country][type][year]}</TableCell>

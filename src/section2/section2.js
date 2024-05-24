@@ -214,7 +214,7 @@ const Section2 = ({id, isActive}) => {
                                     sx={{
                                         position: 'sticky',
                                         left: 0,
-                                        top: 115,
+                                        top: 114,
                                         zIndex: 1,
                                         backgroundColor: '#F5F5F5',
                                     }}

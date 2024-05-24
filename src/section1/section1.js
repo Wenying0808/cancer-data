@@ -150,14 +150,18 @@ const Section1 = ({id, isActive}) => {
         
         return(
             <div style={{ maxHeight: "400px", overflowY: "auto" }}>
-                <Table>
-                    <TableHead className="columnheader">
+                <Table stickyHeader>
+                    <TableHead>
                         <TableRow className="columnheader-row" >
                             <TableCell 
                                 className="columnheader-cell"
                                 onClick={() => sortData("Entity")}
                                 onMouseEnter={() => handleColumnHover("Entity")}
                                 onMouseLeave={handleColumnLeave}
+                                sx={{
+                                    backgroundColor:'#FBFBFB',
+                                    fontWeight: 600,
+                                }}
                             >
                                 Country / Area
                                 {getSortingIcon("Entity")}
@@ -169,6 +173,10 @@ const Section1 = ({id, isActive}) => {
                                 onClick={() => sortData(yearRange[0])}
                                 onMouseEnter={() => handleColumnHover(yearRange[0])}
                                 onMouseLeave={handleColumnLeave}
+                                sx={{
+                                    backgroundColor:'#FBFBFB',
+                                    fontWeight: 600,
+                                }}
                             >
                                 {yearRange[0]}
                                 (%)
@@ -181,6 +189,10 @@ const Section1 = ({id, isActive}) => {
                                 onClick={() => sortData(yearRange[1])}
                                 onMouseEnter={() => handleColumnHover(yearRange[1])}
                                 onMouseLeave={handleColumnLeave}
+                                sx={{
+                                    backgroundColor:'#FBFBFB',
+                                    fontWeight: 600,
+                                }}
                             >
                                 {yearRange[1]}
                                 (%)

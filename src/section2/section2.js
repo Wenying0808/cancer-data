@@ -1,16 +1,18 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useMemo} from "react";
 import * as d3 from "d3";
 import section2Dataset from './section2data.csv';
 import "../section/section.css";
 import ToggleButtonTableChart from "../toggleButton/toggleButtonTableChart";
 import YearRangeSlider from "../slider/YearRangeSlider";
 import { Table, TableHead, TableRow, TableCell, TableBody, Select, MenuItem, FormControl } from '@mui/material';
+import iso3166Lookup from "iso3166-lookup";
+import continentCountryIds from "../worldmap/ContinentCountryId";
 
 const Section2 = ({id, isActive}) => {
 
     const[section2Data, setSection2Data] = useState([]);
     const[selectedTabOption, setSelectedTabOption] = useState("table");
-    const[selectedRegion, setSelectedRegion] = useState("World");
+    const[selectedContinent, setSelectedContinent] = useState("World");
     const[yearRange, setYearRange] = useState([1990,2019])
 
     //fetch section 2 data on initail render
@@ -28,8 +30,8 @@ const Section2 = ({id, isActive}) => {
 
     //group data by country in an object
     const dataByCountry = {};
-    const yearDataByCountry={};
-    const typeDataByCountry={};
+    const yearDataByCountry = {};
+    const typeDataByCountry = {};
 
     // Mapping of cancer types to CSV columns
 
@@ -110,6 +112,21 @@ const Section2 = ({id, isActive}) => {
     console.log("yearDataByCountry in section 2:", yearDataByCountry);
     console.log("typeDataByCountry in section 2:", typeDataByCountry);
 
+    //filter typeDataByCountry by the selected continent
+    const filteredTypeDataByCountry = useMemo(() => {
+        /*const filtered = [...Object.values(typeDataByCountry)];*///this approach lost the original key
+        const filteredEntries = Object.entries(typeDataByCountry).filter(([country, data]) => {
+            if (selectedContinent === "World"){
+                return true;
+            } else {
+                const countryCode = data['Code'];
+                const countryId = iso3166Lookup.findAlpha3(countryCode, "num3");
+                return continentCountryIds[selectedContinent].includes(parseInt(countryId));
+            }
+        })
+        return Object.fromEntries(filteredEntries);
+    },[typeDataByCountry, selectedContinent]);
+    console.log("filteredTypeDataByCountry", filteredTypeDataByCountry);
 
     //change the tab option
     const handleTabOptionChange = (event, newOption) => {
@@ -119,8 +136,8 @@ const Section2 = ({id, isActive}) => {
     };
 
     //change the region
-    const handleRegionChange = (event) => {
-        setSelectedRegion(event.target.value)
+    const handleContinentChange = (event) => {
+        setSelectedContinent(event.target.value)
     };
 
     //change the year range
@@ -208,7 +225,7 @@ const Section2 = ({id, isActive}) => {
                     </TableHead>
                     {/*row: country, year 1 and year 2 */}
                     <TableBody>
-                        {Object.keys(typeDataByCountry).map((country) => (
+                        {Object.keys(data).map((country) => (
                             <TableRow key={country} sx={{'&:hover':{backgroundColor:'#E5EBF8'}}}>
                                 <TableCell
                                     sx={{
@@ -224,7 +241,7 @@ const Section2 = ({id, isActive}) => {
                                 {cancerTypes.map((type) => (
                                     yearRange.map((year) => (
                                         <TableCell key={`${country}-${type}-${year}`}>
-                                            {typeDataByCountry[country][type][year]}
+                                            {data[country][type][year]}
                                         </TableCell>
                                     ))
                                 ))}
@@ -249,12 +266,18 @@ const Section2 = ({id, isActive}) => {
             <div className="control" id="control">
                 <ToggleButtonTableChart value={selectedTabOption} onChange={handleTabOptionChange}/>
                 <FormControl size="small">
-                    <Select sx={{width: "150px"}} value={selectedRegion} onChange={handleRegionChange}>
+                    <Select sx={{width: "150px"}} value={selectedContinent} onChange={handleContinentChange}>
                         <MenuItem value="World">World</MenuItem>
+                        <MenuItem value="Africa">Africa</MenuItem>
+                        <MenuItem value="North America">North America</MenuItem>
+                        <MenuItem value="South America">South America</MenuItem>
+                        <MenuItem value="Asia">Asia</MenuItem>
+                        <MenuItem value="Europe">Europe</MenuItem>
+                        <MenuItem value="Oceania">Oceania</MenuItem>
                     </Select> 
                 </FormControl>
             </div>
-            <div className="canvas" id="canvas">{selectedTabOption==="table" ? createTable(dataByCountry) : createChart()}</div>
+            <div className="canvas" id="canvas">{selectedTabOption==="table" ? createTable(filteredTypeDataByCountry) : createChart()}</div>
             <div className="slider-control" id="slider-control">{createSlider()}</div>
             <div className="resource" id="resource">Data source: IHME, Global Burden of Disease (2019)</div>
         </section>

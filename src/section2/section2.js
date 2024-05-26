@@ -245,6 +245,7 @@ const Section2 = ({id, isActive}) => {
                                     </TableCell>
                                 </TableRow>
                                 {Object.keys(data).map((country) => (
+                                    /*only national data has country code*/
                                     data[country]["Code"] 
                                     ? null 
                                     : (

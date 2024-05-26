@@ -40,28 +40,33 @@ const Section1 = ({id, isActive}) => {
         });
     }, []);
 
-    //group data per country
-    const dataByCountry = {};
-
-    section1Data.forEach((row) => {
-        if(!dataByCountry[row.Entity]){
-            dataByCountry[row.Entity] = {Entity: row.Entity}
-        }
-        //add data from 1990 to 2019 to each country
-        dataByCountry[row.Entity][row.Year] = row["Current number of cases of neoplasms per 100 people, in both sexes aged all ages"];
-        dataByCountry[row.Entity]["Code"] = row["Code"];
-
-        //add country code from iso to the data
-        if (!dataByCountry[row.Entity].hasOwnProperty("id")) {
-            const countryDetail = iso3166Lookup.findAlpha3(row.Code); //Find country details by ISO 3166-1 Alpha-3
-            console.log("countryDetail", countryDetail);
-            if(countryDetail){
-                dataByCountry[row.Entity].id = countryDetail.num3;
+    // memoralize data
+    const dataByCountry = useMemo(() => {
+        const dataByCou = {};
+        //group data per country
+        section1Data.forEach((row) => {
+            if(!dataByCou[row.Entity]){
+                dataByCou[row.Entity] = {Entity: row.Entity}
             }
-        }
-    });
+            //add data from 1990 to 2019 to each country
+            dataByCou[row.Entity][row.Year] = row["Current number of cases of neoplasms per 100 people, in both sexes aged all ages"];
+            dataByCou[row.Entity]["Code"] = row["Code"];
+    
+            //add country code from iso to the data
+            if (!dataByCou[row.Entity].hasOwnProperty("id")) {
+                const countryDetail = iso3166Lookup.findAlpha3(row.Code); //Find country details by ISO 3166-1 Alpha-3
+                console.log("countryDetail", countryDetail);
+                if(countryDetail){
+                    dataByCou[row.Entity].id = countryDetail.num3;
+                }
+            }
+        });
+        return dataByCou;
 
-    /*console.log("Section1 dataByCountry:",dataByCountry);*/
+    }, [section1Data]);
+
+
+    console.log("Section1 dataByCountry:",dataByCountry);
     /*console.log("all country names from lookup: ",iso3166Lookup.getAllCountryNames());*/
 
     //memorize filter Data

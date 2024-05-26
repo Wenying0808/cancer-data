@@ -13,6 +13,7 @@ const Section2 = ({id, isActive}) => {
     const[section2Data, setSection2Data] = useState([]);
     const[selectedTabOption, setSelectedTabOption] = useState("table");
     const[selectedContinent, setSelectedContinent] = useState("World");
+    const[selectedCountryOrRegion, setSelectedCountryOrRegion] = useState("European Region (WHO)")
     const[yearRange, setYearRange] = useState([1990,2019])
 
     //fetch section 2 data on initail render
@@ -104,9 +105,14 @@ const Section2 = ({id, isActive}) => {
         }
     };
 
-    //change the region
+    //change the region for table
     const handleContinentChange = (event) => {
         setSelectedContinent(event.target.value)
+    };
+
+    //change the region for chart
+    const handleCountryOrRegionChange = (event) => {
+        setSelectedCountryOrRegion(event.target.value);
     };
 
     //change the year range
@@ -135,6 +141,7 @@ const Section2 = ({id, isActive}) => {
 
     //create table
     const createTable = (data) => {
+
         return(
             <div style={{ maxHeight: "440px", overflowY: "auto" }}>
                 <Table stickyHeader>
@@ -280,10 +287,45 @@ const Section2 = ({id, isActive}) => {
     };
 
     const createChart = () => {
-        return(
-            <div style={{backgroundColor:'black', width:'50px', height: '50px'}}></div>
-        );
+
+        const countryOrRegionData = typeDataByCountry[selectedCountryOrRegion];
+        const margin = { top:20, right: 50, bottom: 40, left: 40};
+        const width = 900 - margin.left - margin.right;
+        const height = 440 - margin.top - margin.bottom;
+
+        const canvas = d3.select('#canvas2');
+        
+        // Remove any existing SVG elements inside the canvas
+        canvas.selectAll('svg').remove();
+
+        const svg = canvas.append("svg")
+                            .attr("width", width + margin.left + margin.right)
+                            .attr("height", height + margin.top + margin.bottom)
+                            .append("g")
+                            .attr("transform", `translate(${margin.left},${margin.top})`)
+        
+        //x axis
+        const xAxis = d3.scaleLinear()
+                    .domain(d3.extent(yearRange))
+                    .range([0, width])
+
+        svg.append("g")
+            .attr("class", "x-axis")
+            .attr("transform", `translate(0, ${height})`)
+            .call(d3.axisBottom(xAxis))
+        
+        //y axis
+        const yAxis = d3.scaleLinear()
+                    .domain([0, 0.2])
+                    .range([height, 0])
+        svg.append("g")
+            .attr("class", "y-axis")
+            .call(d3.axisLeft(yAxis))
+
+        //line generator
+    
     };
+
 
     return(
         <section id={id} className={`section ${isActive ? "active" : ""}`}>
@@ -292,18 +334,34 @@ const Section2 = ({id, isActive}) => {
             <div className="control" id="control">
                 <ToggleButtonTableChart value={selectedTabOption} onChange={handleTabOptionChange}/>
                 <FormControl size="small">
-                    <Select sx={{width: "150px"}} value={selectedContinent} onChange={handleContinentChange}>
-                        <MenuItem value="World">World</MenuItem>
-                        <MenuItem value="Africa">Africa</MenuItem>
-                        <MenuItem value="North America">North America</MenuItem>
-                        <MenuItem value="South America">South America</MenuItem>
-                        <MenuItem value="Asia">Asia</MenuItem>
-                        <MenuItem value="Europe">Europe</MenuItem>
-                        <MenuItem value="Oceania">Oceania</MenuItem>
-                    </Select> 
+                    {selectedTabOption === 'table' 
+                    ?
+                        (
+                        <Select sx={{width: "150px"}} value={selectedContinent} onChange={handleContinentChange}>
+                            <MenuItem vsvgalue="World">World</MenuItem>
+                            <MenuItem value="Africa">Africa</MenuItem>
+                            <MenuItem value="North America">North America</MenuItem>
+                            <MenuItem value="South America">South America</MenuItem>
+                            <MenuItem value="Asia">Asia</MenuItem>
+                            <MenuItem value="Europe">Europe</MenuItem>
+                            <MenuItem value="Oceania">Oceania</MenuItem>
+                        </Select> 
+                        )
+                    :
+                        (
+                            <Select sx={{width: "250px"}} value={selectedCountryOrRegion} onChange={handleCountryOrRegionChange}>
+                               {Object.keys(typeDataByCountry).map((item) => (
+                                    <MenuItem key={item} value={item}>
+                                        {item}
+                                    </MenuItem>
+                               ))}
+                            </Select>
+                        )
+                    }
+                    
                 </FormControl>
             </div>
-            <div className="canvas" id="canvas">{selectedTabOption==="table" ? createTable(filteredTypeDataByCountry) : createChart()}</div>
+            <div className="canvas" id="canvas2">{selectedTabOption==="table" ? createTable(filteredTypeDataByCountry) : createChart()}</div>
             <div className="slider-control" id="slider-control">{createSlider()}</div>
             <div className="resource" id="resource">Data source: IHME, Global Burden of Disease (2019)</div>
         </section>

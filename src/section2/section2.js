@@ -86,12 +86,15 @@ const Section2 = ({id, isActive}) => {
     const filteredTypeDataByCountry = useMemo(() => {
         /*const filtered = [...Object.values(typeDataByCountry)];*///this approach lost the original key
         const filteredEntries = Object.entries(typeDataByCountry).filter(([country, data]) => {
+
+            const countryCode = data['Code'];
+            const countryId = iso3166Lookup.findAlpha3(countryCode, "num3");
+            const countriesInSelectedContinent = continentCountryIds[selectedContinent];
+
             if (selectedContinent === "World"){
                 return true;
             } else {
-                const countryCode = data['Code'];
-                const countryId = iso3166Lookup.findAlpha3(countryCode, "num3");
-                return continentCountryIds[selectedContinent].includes(parseInt(countryId));
+                    return countriesInSelectedContinent && countriesInSelectedContinent.includes(parseInt(countryId));
             }
         })
         return Object.fromEntries(filteredEntries);
@@ -144,7 +147,7 @@ const Section2 = ({id, isActive}) => {
 
         //remove line chart before rendering table
         d3.select('#canvas2').selectAll('svg').remove();
-        
+
         return(
             <div style={{ maxHeight: "440px", overflowY: "auto" }}>
                 <Table stickyHeader>
@@ -341,7 +344,7 @@ const Section2 = ({id, isActive}) => {
                     ?
                         (
                         <Select sx={{width: "150px"}} value={selectedContinent} onChange={handleContinentChange}>
-                            <MenuItem vsvgalue="World">World</MenuItem>
+                            <MenuItem value="World">World</MenuItem>
                             <MenuItem value="Africa">Africa</MenuItem>
                             <MenuItem value="North America">North America</MenuItem>
                             <MenuItem value="South America">South America</MenuItem>

@@ -11,7 +11,8 @@ const Section3 = ({id, isActive}) => {
             <div className="control" id="control">
                 <ToggleButtonTableChart value={"table"}/>
             </div>
-            <div className="canvas" id="canvas"></div>
+            <div className="canvas" id="canvas3"></div>
+            <div className="slider-control" id="slider-control3"></div>
             <div className="resource" id="resource">Data source: IHME, Global Burden of Disease (2019)</div>
         </section>
     )

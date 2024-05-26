@@ -271,8 +271,8 @@ const Section1 = ({id, isActive}) => {
                  
                 
             </div>
-            <div className="canvas" id="canvas">{selectedTabOption==="table" ? createTable(sortedData) : createMap()}</div>
-            <div className="slider-control" id="slider-control">{selectedTabOption==="table" ? createTableSlider() : createMapSlider()}</div>
+            <div className="canvas" id="canvas1">{selectedTabOption==="table" ? createTable(sortedData) : createMap()}</div>
+            <div className="slider-control" id="slider-control1">{selectedTabOption==="table" ? createTableSlider() : createMapSlider()}</div>
             <div className="resource" id="resource">Data source: IHME, Global Burden of Disease (2019)</div>
         </section>
     )

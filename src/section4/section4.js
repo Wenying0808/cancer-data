@@ -13,7 +13,8 @@ const Section4 = ({id, isActive}) => {
             <div className="control" id="control">
                 <ToggleButtonTableMap value={"table"}/>
             </div>
-            <div className="canvas" id="canvas"></div>
+            <div className="canvas" id="canvas4"></div>
+            <div className="slider-control" id="slider-control4"></div>
             <div className="resource" id="resource">Data source: IHME, Global Burden of Disease (2019)</div>
         </section>
     )

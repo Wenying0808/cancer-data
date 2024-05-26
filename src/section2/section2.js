@@ -142,6 +142,9 @@ const Section2 = ({id, isActive}) => {
     //create table
     const createTable = (data) => {
 
+        //remove line chart before rendering table
+        d3.select('#canvas2').selectAll('svg').remove();
+        
         return(
             <div style={{ maxHeight: "440px", overflowY: "auto" }}>
                 <Table stickyHeader>
@@ -362,7 +365,7 @@ const Section2 = ({id, isActive}) => {
                 </FormControl>
             </div>
             <div className="canvas" id="canvas2">{selectedTabOption==="table" ? createTable(filteredTypeDataByCountry) : createChart()}</div>
-            <div className="slider-control" id="slider-control">{createSlider()}</div>
+            <div className="slider-control" id="slider-control2">{createSlider()}</div>
             <div className="resource" id="resource">Data source: IHME, Global Burden of Disease (2019)</div>
         </section>
     )

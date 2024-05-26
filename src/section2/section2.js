@@ -295,7 +295,7 @@ const Section2 = ({id, isActive}) => {
     const createChart = () => {
 
         const countryOrRegionData = typeDataByCountry[selectedCountryOrRegion];
-        const margin = { top:20, right: 50, bottom: 40, left: 40};
+        const margin = { top:20, right: 250, bottom: 40, left: 40};
         const width = 900 - margin.left - margin.right;
         const height = 440 - margin.top - margin.bottom;
 
@@ -322,13 +322,48 @@ const Section2 = ({id, isActive}) => {
         
         //y axis
         const yAxis = d3.scaleLinear()
-                    .domain([0, 0.2])
+                    .domain([0, 0.6])
                     .range([height, 0])
         svg.append("g")
             .attr("class", "y-axis")
             .call(d3.axisLeft(yAxis))
 
         //line generator
+        const line = d3.line()
+                        .x(d => xAxis(d.year))
+                        .y(d => yAxis(d.value))
+
+        //define color for each line
+        const color = d3.scaleOrdinal(d3.schemeCategory10)
+                        .domain(cancerTypes)
+        
+        //prepare data for each cancer type
+        cancerTypes.forEach(cancerType => {
+            const data = yearRange.map(year => (
+                {
+                    year: year,
+                    value: parseFloat(typeDataByCountry[selectedCountryOrRegion][cancerType][year]) || 0 // handle missing data
+                }
+            ));
+            svg.append("path")
+                .datum(data)
+                .attr("fill", "none")
+                .attr("stroke", color(cancerType))
+                .attr("stroke-width", 1.5)
+                .attr("d", line)
+                .attr("class", "line")
+                .attr("id", `${cancerType}`)
+            
+            //add labels to line
+            svg.append("text")
+                .datum(data[data.length-1]) // Last data point
+                .attr("transform", d => `translate(${xAxis(d.year)},${yAxis(d.value)})`)
+                .attr("x", 20)
+                .attr("dy", "0.35em")
+                .attr("fill", color(cancerType))
+                .style("font-size", "10px")
+                .text(cancerType)
+        })
     
     };
 

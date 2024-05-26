@@ -28,14 +28,8 @@ const Section2 = ({id, isActive}) => {
 
     console.log("Section 2 Fetched csv Data:", section2Data);
 
-    //group data by country in an object
-    const dataByCountry = {};
-    const yearDataByCountry = {};
-    const typeDataByCountry = {};
-
     // Mapping of cancer types to CSV columns
-
-    const cancerMapping = {
+    const cancerMapping = useMemo(() => ({
         "Bladder Cancer": "Current number of cases of bladder cancer per 100 people, in both sexes aged age-standardized",
         "Brain and Central Nervous System Cancer": "Current number of cases of brain and central nervous system cancer per 100 people, in both sexes aged age-standardized",
         "Breast Cancer": "Current number of cases of breast cancer per 100 people, in both sexes aged age-standardized",
@@ -57,59 +51,34 @@ const Section2 = ({id, isActive}) => {
         "Thyroid Cancer": "Current number of cases of thyroid cancer per 100 people, in both sexes aged age-standardized",
         "Tracheal, Bronchus, and Lung Cancer": "Current number of cases of tracheal, bronchus, and lung cancer per 100 people, in both sexes aged age-standardized",
         "Uterine Cancer": "Current number of cases of uterine cancer per 100 people, in both sexes aged age-standardized"
-    };
+    }), []);
     // Get cancer types
     const cancerTypes = Object.keys(cancerMapping);
 
-    section2Data.forEach((row) => {
-        const country = row.Entity;
-        const year = row.Year;
-        //create an obejct for each country if it doesn't exist
-        if(!dataByCountry[country]){
-            dataByCountry[country]={};
-        };
 
-        if(!yearDataByCountry[country]){
-            yearDataByCountry[country]={};
-        };
-
-        if(!typeDataByCountry[country]){
-            typeDataByCountry[country]={};
-        };
-
-        //create year object to each country if it doesn't exist
-        if(!dataByCountry[country][year]){
-            dataByCountry[country][year]={};
-        };
-
-        if(!yearDataByCountry[country][year]){
-            yearDataByCountry[country][year]={};
-        };
-
-        cancerTypes.forEach(cancerType => {
-            //create cancer type object to each country if it doesn't exist
-            if(!dataByCountry[country][cancerType]){
-                dataByCountry[country][cancerType]={};
+    const typeDataByCountry = useMemo(() => {
+        const dataByCountry = {};
+        section2Data.forEach((row) => {
+            const country = row.Entity;
+            const year = row.Year;
+            //create an obejct for each country if it doesn't exist
+            if(!dataByCountry[country]){
+                dataByCountry[country]={};
             };
-            dataByCountry[country][cancerType][year] = row[cancerMapping[cancerType]];
+            dataByCountry[country]["Code"]=row.Code;
+            cancerTypes.forEach(cancerType => {
+                //create cancer type object to each country if it doesn't exist
+                if(!dataByCountry[country][cancerType]){
+                    dataByCountry[country][cancerType]={};
+                };
+                dataByCountry[country][cancerType][year] = row[cancerMapping[cancerType]];
+            });
+        });
+        console.log("dataByCountry in section 2:", dataByCountry);
+        return dataByCountry;
+    }, [section2Data, cancerMapping, cancerTypes]);
 
-            if(!typeDataByCountry[country][cancerType]){
-                typeDataByCountry[country][cancerType]={};
-            };
-            typeDataByCountry[country][cancerType][year] = row[cancerMapping[cancerType]];
-        })
-
-        dataByCountry[country]["Code"] = row["Code"];
-        yearDataByCountry[country]["Code"] = row["Code"];
-        typeDataByCountry[country]["Code"] = row["Code"];
-
-        cancerTypes.forEach(cancerType => {
-            dataByCountry[country][year][cancerType] = row[cancerMapping[cancerType]];
-            yearDataByCountry[country][year][cancerType] = row[cancerMapping[cancerType]];
-        })
-    })
-    console.log("dataByCountry in section 2:", dataByCountry);
-    console.log("yearDataByCountry in section 2:", yearDataByCountry);
+  
     console.log("typeDataByCountry in section 2:", typeDataByCountry);
 
     //filter typeDataByCountry by the selected continent
@@ -167,7 +136,7 @@ const Section2 = ({id, isActive}) => {
     //create table
     const createTable = (data) => {
         return(
-            <div style={{ maxHeight: "400px", overflowY: "auto" }}>
+            <div style={{ maxHeight: "440px", overflowY: "auto" }}>
                 <Table stickyHeader>
                     {/*table header: country, cancer type, table subheader: year 1 and year 2 */}
                     <TableHead>
@@ -181,6 +150,7 @@ const Section2 = ({id, isActive}) => {
                                     top: 0,
                                     zIndex: 1,
                                     left: 0,
+                                    fontWeight: 600
                                 }}
                             >
                                 Country / Region
@@ -212,7 +182,7 @@ const Section2 = ({id, isActive}) => {
                                         sx={{
                                             backgroundColor: '#FBFBFB',
                                             position: 'sticky',
-                                            top: 57,
+                                            top: 56.5,
                                             left: 182,
                                             zIndex: 1,
                                         }} 
@@ -226,27 +196,82 @@ const Section2 = ({id, isActive}) => {
                     {/*row: country, year 1 and year 2 */}
                     <TableBody>
                         {Object.keys(data).map((country) => (
-                            <TableRow key={country} sx={{'&:hover':{backgroundColor:'#E5EBF8'}}}>
-                                <TableCell
-                                    sx={{
-                                        position: 'sticky',
-                                        left: 0,
-                                        top: 114,
-                                        zIndex: 1,
-                                        backgroundColor: '#F5F5F5',
-                                    }}
-                                >
-                                    {country}
-                                </TableCell>
-                                {cancerTypes.map((type) => (
-                                    yearRange.map((year) => (
-                                        <TableCell key={`${country}-${type}-${year}`}>
-                                            {data[country][type][year]}
-                                        </TableCell>
-                                    ))
-                                ))}
-                            </TableRow>
+                            data[country]["Code"] ? (
+                                <TableRow key={country} sx={{'&:hover':{backgroundColor:'#E5EBF8'}}}>
+                                    <TableCell
+                                        sx={{
+                                            position: 'sticky',
+                                            left: 0,
+                                            top: 113.5,
+                                            zIndex: 1,
+                                            backgroundColor: '#F5F5F5',
+                                        }}
+                                    >
+                                        {country}
+                                    </TableCell>
+                                    {cancerTypes.map((type) => (
+                                        yearRange.map((year) => (
+                                            <TableCell key={`${country}-${type}-${year}`}>
+                                                {data[country][type][year]}
+                                            </TableCell>
+                                        ))
+                                    ))}
+                                </TableRow>
+                            ) : null   
                         ))}
+
+                        {/* only show the other row and its rows when the selectedContinent is World as it's regional data instead of national data*/}
+                        {selectedContinent === "World" && (
+                            <>
+                                <TableRow>
+                                    <TableCell
+                                        sx={{
+                                            position: 'sticky',
+                                            left: 0,
+                                            top: 114,
+                                            zIndex: 1,
+                                            backgroundColor: '#E0E0E0',
+                                            fontWeight: 600
+                                        }}
+                                    >
+                                        Other
+                                    </TableCell>
+                                    <TableCell
+                                        colSpan={21*2}
+                                        sx={{
+                                            backgroundColor: '#E0E0E0',
+                                        }}
+                                    >
+                                    </TableCell>
+                                </TableRow>
+                                {Object.keys(data).map((country) => (
+                                    data[country]["Code"] 
+                                    ? null 
+                                    : (
+                                        <TableRow key={country} sx={{'&:hover':{backgroundColor:'#E5EBF8'}}}>
+                                            <TableCell
+                                                sx={{
+                                                    position: 'sticky',
+                                                    left: 0,
+                                                    top: 114,
+                                                    zIndex: 1,
+                                                    backgroundColor: '#F5F5F5',
+                                                }}
+                                            >
+                                                {country}
+                                            </TableCell>
+                                            {cancerTypes.map((type) => (
+                                                yearRange.map((year) => (
+                                                    <TableCell key={`${country}-${type}-${year}`}>
+                                                        {data[country][type][year]}
+                                                    </TableCell>
+                                                ))
+                                            ))}
+                                        </TableRow>
+                                    )  
+                                ))}
+                            </>
+                        )}
                     </TableBody>
                 </Table>
             </div>

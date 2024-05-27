@@ -305,7 +305,7 @@ const Section2 = ({id, isActive}) => {
         );
         console.log("maxValue in chart", maxValue);
 
-        const margin = { top:20, right: 220, bottom: 40, left: 30};
+        const margin = { top:20, right: 220, bottom: 40, left: 40};
         const width = 900 - margin.left - margin.right;
         const height = 440 - margin.top - margin.bottom;
 
@@ -327,7 +327,7 @@ const Section2 = ({id, isActive}) => {
 
         const xAxisFormat = d3.axisBottom(xAxis)
                                 .ticks(d3.max(yearRange) - d3.min(yearRange))  // Ensures a tick for each year
-                                .tickFormat( d=> d.toString()) // remove the comma from the year label
+                                .tickFormat( d => d.toString()) // remove the comma from the year label
 
         svg.append("g")
             .attr("class", "x-axis")
@@ -338,9 +338,12 @@ const Section2 = ({id, isActive}) => {
         const yAxis = d3.scaleLinear()
                     .domain([0, maxValue])
                     .range([height, 0])
+        const yAxisFormat = d3.axisLeft(yAxis)
+                                .tickFormat(d => `${d}%`)
+
         svg.append("g")
             .attr("class", "y-axis")
-            .call(d3.axisLeft(yAxis))
+            .call(yAxisFormat)
 
         //line generator
         const line = d3.line()
@@ -350,6 +353,22 @@ const Section2 = ({id, isActive}) => {
         //define color for each line
         const color = d3.scaleOrdinal(d3.schemeCategory10)
                         .domain(cancerTypes)
+        
+        //add vertical lines for each tick on x axis
+        const allYearsFromYearRange = d3.range(yearRange[0], yearRange[1]+1);
+        console.log("Section 2 - allYearsFromYearRange", allYearsFromYearRange);
+
+        svg.selectAll(".vertical-line")
+            .data(allYearsFromYearRange)
+            .enter()
+            .append("line")
+            .attr("class", "vertical-line")
+            .attr("x1", d => xAxis(d))
+            .attr("x2", d => xAxis(d))
+            .attr("y1", d => 0)
+            .attr("y2", height)
+            .attr("stroke", "#FBFBFB")
+            .attr("stroke-width", 3);
         
         //prepare data for each cancer type
         cancerTypes.forEach(cancerType => {
@@ -378,7 +397,48 @@ const Section2 = ({id, isActive}) => {
                 .style("font-size", "10px")
                 .text(cancerType)
         })
-    
+
+        
+
+        //tooltip
+        const tooltip = d3.select("body").append("div")
+                                .attr("class", "tooltip")
+                                .style("opacity", 0)
+                                .style("position", "absolute")
+                                .style("background-color", "white")
+                                .style("box-shadow", "0px 1px 5px 0px rgba(0, 0, 0, 0.25)")
+                                .style("border-radius", "10px")
+                                .style("padding", "10px")
+                                .style("pointer-events", "none");
+        
+        // show tooltip when hovering on the vertical line
+        // Add event listeners for vertical lines to show tooltip on hover
+        svg.selectAll(".vertical-line")
+            .on("mouseover", (event, year) => {
+                const yearData = cancerTypes.map(cancerType => (
+                    {
+                        type: cancerType,
+                        value: parseFloat(typeDataByCountry[selectedCountryOrRegion][cancerType][year])
+                    }
+                ));
+                tooltip.transition()
+                            .duration(200)
+                            .style("opacity", 1)
+                
+                tooltip.html(`${year}<br>` + 
+                    yearData.map( d => `${d.type}: ${d.value}<br>`)
+                )
+                        .style("left", (event.pageX + 5) + "px")
+                        .style("top", (event.pageY - 200) + "px");
+
+            })
+            .on("mouseout", () => {
+                tooltip.transition()
+                            .duration(500)
+                            .style("opacity", 0)
+            })
+
+
     };
 
 

@@ -32,16 +32,16 @@ const Section2 = ({id, isActive}) => {
     // Mapping of cancer types to CSV columns
     const cancerMapping = useMemo(() => ({
         "Bladder Cancer": "Current number of cases of bladder cancer per 100 people, in both sexes aged age-standardized",
-        "Brain and Central Nervous System Cancer": "Current number of cases of brain and central nervous system cancer per 100 people, in both sexes aged age-standardized",
+        "Brain & Central Nervous System Cancer": "Current number of cases of brain and central nervous system cancer per 100 people, in both sexes aged age-standardized",
         "Breast Cancer": "Current number of cases of breast cancer per 100 people, in both sexes aged age-standardized",
         "Cervical Cancer": "Current number of cases of cervical cancer per 100 people, in both sexes aged age-standardized",
-        "Colon and Rectum Cancer": "Current number of cases of colon and rectum cancer per 100 people, in both sexes aged age-standardized",
+        "Colon & Rectum Cancer": "Current number of cases of colon and rectum cancer per 100 people, in both sexes aged age-standardized",
         "Esophageal Cancer": "Current number of cases of esophageal cancer per 100 people, in both sexes aged age-standardized",
-        "Gallbladder and Biliary Tract Cancer": "Current number of cases of gallbladder and biliary tract cancer per 100 people, in both sexes aged age-standardized",
+        "Gallbladder & Biliary Tract Cancer": "Current number of cases of gallbladder and biliary tract cancer per 100 people, in both sexes aged age-standardized",
         "Kidney Cancer": "Current number of cases of kidney cancer per 100 people, in both sexes aged age-standardized",
         "Larynx Cancer": "Current number of cases of larynx cancer per 100 people, in both sexes aged age-standardized",
         "Liver Cancer": "Current number of cases of liver cancer per 100 people, in both sexes aged age-standardized",
-        "Lip and Oral Cavity Cancer": "Current number of cases of lip and oral cavity cancer per 100 people, in both sexes aged age-standardized",
+        "Lip & Oral Cavity Cancer": "Current number of cases of lip and oral cavity cancer per 100 people, in both sexes aged age-standardized",
         "Nasopharynx Cancer": "Current number of cases of nasopharynx cancer per 100 people, in both sexes aged age-standardized",
         "Non-Melanoma Skin Cancer": "Current number of cases of non-melanoma skin cancer per 100 people, in both sexes aged age-standardized",
         "Ovarian Cancer": "Current number of cases of ovarian cancer per 100 people, in both sexes aged age-standardized",
@@ -50,7 +50,7 @@ const Section2 = ({id, isActive}) => {
         "Stomach Cancer": "Current number of cases of stomach cancer per 100 people, in both sexes aged age-standardized",
         "Testicular Cancer": "Current number of cases of testicular cancer per 100 people, in both sexes aged age-standardized",
         "Thyroid Cancer": "Current number of cases of thyroid cancer per 100 people, in both sexes aged age-standardized",
-        "Tracheal, Bronchus, and Lung Cancer": "Current number of cases of tracheal, bronchus, and lung cancer per 100 people, in both sexes aged age-standardized",
+        "Tracheal, Bronchus & Lung Cancer": "Current number of cases of tracheal, bronchus, and lung cancer per 100 people, in both sexes aged age-standardized",
         "Uterine Cancer": "Current number of cases of uterine cancer per 100 people, in both sexes aged age-standardized"
     }), []);
     // Get cancer types
@@ -305,7 +305,7 @@ const Section2 = ({id, isActive}) => {
         );
         console.log("maxValue in chart", maxValue);
 
-        const margin = { top:20, right: 250, bottom: 40, left: 40};
+        const margin = { top:20, right: 220, bottom: 40, left: 30};
         const width = 900 - margin.left - margin.right;
         const height = 440 - margin.top - margin.bottom;
 
@@ -325,10 +325,14 @@ const Section2 = ({id, isActive}) => {
                     .domain(d3.extent(yearRange))
                     .range([0, width])
 
+        const xAxisFormat = d3.axisBottom(xAxis)
+                                .ticks(d3.max(yearRange) - d3.min(yearRange))  // Ensures a tick for each year
+                                .tickFormat( d=> d.toString()) // remove the comma from the year label
+
         svg.append("g")
             .attr("class", "x-axis")
             .attr("transform", `translate(0, ${height})`)
-            .call(d3.axisBottom(xAxis))
+            .call(xAxisFormat)
         
         //y axis
         const yAxis = d3.scaleLinear()

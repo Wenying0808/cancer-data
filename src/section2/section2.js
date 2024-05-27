@@ -295,6 +295,16 @@ const Section2 = ({id, isActive}) => {
     const createChart = () => {
 
         const countryOrRegionData = typeDataByCountry[selectedCountryOrRegion];
+
+        //find the max value by iterating through each cancer type across the selected year range
+        //use flatmap to flatten the values into a single array
+        const maxValue = Math.max(
+            ...cancerTypes.flatMap(cancerType => 
+                yearRange.map(year => parseFloat(countryOrRegionData[cancerType][year]))
+            )
+        );
+        console.log("maxValue in chart", maxValue);
+
         const margin = { top:20, right: 250, bottom: 40, left: 40};
         const width = 900 - margin.left - margin.right;
         const height = 440 - margin.top - margin.bottom;
@@ -322,7 +332,7 @@ const Section2 = ({id, isActive}) => {
         
         //y axis
         const yAxis = d3.scaleLinear()
-                    .domain([0, 0.6])
+                    .domain([0, maxValue])
                     .range([height, 0])
         svg.append("g")
             .attr("class", "y-axis")

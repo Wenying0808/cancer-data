@@ -352,27 +352,27 @@ const Section2 = ({id, isActive}) => {
         
         //color platte
         const customColorPalette = [
-            "#ff9999",  // Light red
-            "#44C4D8",  // Light blue
-            "#62BC48",  // Light green
-            "#ffcc99",  // Light orange
-            "#768BCE",  // Light purple
-            "#f08080",  // Salmon
-            "#00b300",  // Dark green
-            "#800080",  // Purple
-            "#FF00FF",  // Magenta
-            "#00ffff",  // Cyan
-            "#0000ff",  // Blue
-            "#ee82ee",  // Violet
-            "#ffd700",  // Gold
-            "#8b4513",  // Saddle brown
-            "#dc143c",  // Crimson
-            "#a020f0",  // Royal blue
-            "#48d1cc",  // Turquoise
-            "#808000",  // Olive
-            "#ffa500",  // Orange
-            "#bc8f8f",  // Taupe
-            "#b32830",  // Dark red
+            "#DD8585",  
+            "#E24A4A",  
+            "#C2042A",  
+            "#72080E",  
+            "#EE82EE",  
+            "#C617C6",  
+            "#FFA500",  
+            "#FC7E00",  
+            "#DB5D16",  
+            "#8C776C",  
+            "#6F3307",  
+            "#0EC66E", 
+            "#3FA422",  
+            "#046304",
+            "#7A94E7",  
+            "#05B0FC", 
+            "#2C5DDD", 
+            "#00208F",  
+            "#735BD2",  
+            "#561AB8",  
+            "#5D0089",  
         ];
 
         //define color for each line

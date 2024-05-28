@@ -353,7 +353,7 @@ const Section2 = ({id, isActive}) => {
         //color platte
         const customColorPalette = [
             "#ff9999",  // Light red
-            "#66b3ff",  // Light blue
+            "#44C4D8",  // Light blue
             "#62BC48",  // Light green
             "#ffcc99",  // Light orange
             "#768BCE",  // Light purple
@@ -454,7 +454,7 @@ const Section2 = ({id, isActive}) => {
                             .style("opacity", 1)
                 
                 tooltip.html(() => {
-                    const tooltipContent = `<span style="fontWeight: 600">${year}</span><br>` + sortedYearData.map( d => `<span style="color: ${color(d.type)}" style="fontWeight: 400">${d.type}: ${d.value}</span>`).join("<br>")
+                    const tooltipContent = `<span style="font-weight: 600; font-size: 14px; font-height: 20px;" >${year}</span><br>` + sortedYearData.map( d => `<span style="color: ${color(d.type)}; font-Weight: 600; font-size: 12px; font-height: 16px; " >${d.type}: ${d.value}</span>`).join("<br>")
                     return tooltipContent;
                 })
                         .style("left", (event.pageX + 5) + "px")

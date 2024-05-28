@@ -373,7 +373,8 @@ const Section2 = ({id, isActive}) => {
             "#ffa500",  // Orange
             "#bc8f8f",  // Taupe
             "#b32830",  // Dark red
-          ];
+        ];
+
         //define color for each line
         const color = d3.scaleOrdinal()
                         .domain(cancerTypes)
@@ -454,7 +455,13 @@ const Section2 = ({id, isActive}) => {
                             .style("opacity", 1)
                 
                 tooltip.html(() => {
-                    const tooltipContent = `<span style="font-weight: 600; font-size: 14px; font-height: 20px;" >${year}</span><br>` + sortedYearData.map( d => `<span style="color: ${color(d.type)}; font-Weight: 600; font-size: 12px; font-height: 16px; " >${d.type}: ${d.value}</span>`).join("<br>")
+                    const tooltipContent = `<div style="font-weight: 600; font-size: 14px; font-height: 24px;" > ${year} </div><br>` + 
+                                            sortedYearData.map( d => 
+                                                `<div style="display: flex; flex-direction: row; align-items: center; gap: 8px; padding: 3px 0; ">
+                                                    <div style=" width: 16px; height: 16px; background-color: ${color(d.type)}; "></div>
+                                                    <div style="font-Weight: 500; font-size: 12px; font-height: 16px; margin: 0; padding: 0;">${d.type}: ${d.value}</div>   
+                                                </div>`
+                                            ).join("")
                     return tooltipContent;
                 })
                         .style("left", (event.pageX + 5) + "px")

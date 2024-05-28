@@ -349,10 +349,35 @@ const Section2 = ({id, isActive}) => {
         const line = d3.line()
                         .x(d => xAxis(d.year))
                         .y(d => yAxis(d.value))
-
+        
+        //color platte
+        const customColorPalette = [
+            "#ff9999",  // Light red
+            "#66b3ff",  // Light blue
+            "#62BC48",  // Light green
+            "#ffcc99",  // Light orange
+            "#768BCE",  // Light purple
+            "#f08080",  // Salmon
+            "#00b300",  // Dark green
+            "#800080",  // Purple
+            "#FF00FF",  // Magenta
+            "#00ffff",  // Cyan
+            "#0000ff",  // Blue
+            "#ee82ee",  // Violet
+            "#ffd700",  // Gold
+            "#8b4513",  // Saddle brown
+            "#dc143c",  // Crimson
+            "#a020f0",  // Royal blue
+            "#48d1cc",  // Turquoise
+            "#808000",  // Olive
+            "#ffa500",  // Orange
+            "#bc8f8f",  // Taupe
+            "#b32830",  // Dark red
+          ];
         //define color for each line
-        const color = d3.scaleOrdinal(d3.schemeCategory10)
+        const color = d3.scaleOrdinal()
                         .domain(cancerTypes)
+                        .range(customColorPalette)
         
         //add vertical lines for each tick on x axis
         const allYearsFromYearRange = d3.range(yearRange[0], yearRange[1]+1);
@@ -407,8 +432,8 @@ const Section2 = ({id, isActive}) => {
                                 .style("position", "absolute")
                                 .style("background-color", "white")
                                 .style("box-shadow", "0px 1px 5px 0px rgba(0, 0, 0, 0.25)")
-                                .style("border-radius", "10px")
-                                .style("padding", "10px")
+                                .style("border-radius", "16px")
+                                .style("padding", "16px")
                                 .style("pointer-events", "none");
         
         // show tooltip when hovering on the vertical line
@@ -418,16 +443,20 @@ const Section2 = ({id, isActive}) => {
                 const yearData = cancerTypes.map(cancerType => (
                     {
                         type: cancerType,
-                        value: parseFloat(typeDataByCountry[selectedCountryOrRegion][cancerType][year])
+                        value: parseFloat(typeDataByCountry[selectedCountryOrRegion][cancerType][year]).toFixed(4)
                     }
                 ));
+                //sort from largest to loweset
+                const sortedYearData = yearData.sort((a,b) => b.value - a.value);
+
                 tooltip.transition()
                             .duration(200)
                             .style("opacity", 1)
                 
-                tooltip.html(`${year}<br>` + 
-                    yearData.map( d => `${d.type}: ${d.value}<br>`)
-                )
+                tooltip.html(() => {
+                    const tooltipContent = `<span style="fontWeight: 600">${year}</span><br>` + sortedYearData.map( d => `<span style="color: ${color(d.type)}" style="fontWeight: 400">${d.type}: ${d.value}</span>`).join("<br>")
+                    return tooltipContent;
+                })
                         .style("left", (event.pageX + 5) + "px")
                         .style("top", (event.pageY - 200) + "px");
 

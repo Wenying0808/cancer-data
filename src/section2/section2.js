@@ -27,7 +27,7 @@ const Section2 = ({id, isActive}) => {
         })
     }, [])
 
-    console.log("Section 2 Fetched csv Data:", section2Data);
+    console.log("Section2 Fetched CSV Data:", section2Data);
 
     // Mapping of cancer types to CSV columns
     const cancerMapping = useMemo(() => ({
@@ -75,12 +75,12 @@ const Section2 = ({id, isActive}) => {
                 dataByCountry[country][cancerType][year] = row[cancerMapping[cancerType]];
             });
         });
-        console.log("dataByCountry in section 2:", dataByCountry);
+        console.log("dataByCountry in Section2:", dataByCountry);
         return dataByCountry;
     }, [section2Data, cancerMapping, cancerTypes]);
 
   
-    console.log("typeDataByCountry in Section 2:", typeDataByCountry);
+    console.log("typeDataByCountry in Section2:", typeDataByCountry);
 
     //filter typeDataByCountry by the selected continent
     const filteredTypeDataByCountry = useMemo(() => {
@@ -99,7 +99,7 @@ const Section2 = ({id, isActive}) => {
         })
         return Object.fromEntries(filteredEntries);
     },[typeDataByCountry, selectedContinent]);
-    console.log("filteredTypeDataByCountry in Section 2:", filteredTypeDataByCountry);
+    console.log("filteredTypeDataByCountry in Section2:", filteredTypeDataByCountry);
 
     //change the tab option
     const handleTabOptionChange = (event, newOption) => {

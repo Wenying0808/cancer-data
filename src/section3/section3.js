@@ -14,7 +14,7 @@ const Section3 = ({id, isActive}) => {
     const [selectedTabOption, setSelectedTabOption] = useState("table");
     const [selectedYear, setSelectedYear] = useState(2019);
     const[selectedContinent, setSelectedContinent] = useState("World");
-    
+    const[selectedCountryOrRegion, setSelectedCountryOrRegion] = useState("European Region (WHO)")
 
     //fetch csv data
     useEffect(() => {
@@ -42,7 +42,7 @@ const Section3 = ({id, isActive}) => {
     const ageGroups = Object.keys(ageGroupMapping);
 
     //group data by country
-    const AgeGroupDataByCountry = useMemo(() => {
+    const ageGroupDataByCountry = useMemo(() => {
         const dataByCountry = {};
         section3Data.forEach((row) => {
             const country = row.Entity;
@@ -64,14 +64,14 @@ const Section3 = ({id, isActive}) => {
         return dataByCountry;
     }, [section3Data, ageGroupMapping, ageGroups])
 
-    console.log("AgeGroupDataByCountry in Section3:", AgeGroupDataByCountry);
-    console.log("Object.entries(AgeGroupDataByCountr) in Section3:", Object.entries(AgeGroupDataByCountry));
+    console.log("AgeGroupDataByCountry in Section3:", ageGroupDataByCountry);
+    console.log("Object.entries(AgeGroupDataByCountr) in Section3:", Object.entries(ageGroupDataByCountry));
 
 
     //filter table data by selected continent
     const filteredAgeGroupDataByCountry = useMemo(() => {
         //convert object to key-value pair array, the first array is country, and the second array is its data
-        const filteredData = Object.entries(AgeGroupDataByCountry).filter(([country, data]) => {
+        const filteredData = Object.entries(ageGroupDataByCountry).filter(([country, data]) => {
 
             const countryCode = data["Code"];
             //convert country code to country id
@@ -88,7 +88,7 @@ const Section3 = ({id, isActive}) => {
         })
         return Object.fromEntries(filteredData);
         
-    }, [AgeGroupDataByCountry, selectedContinent]);
+    }, [ageGroupDataByCountry, selectedContinent]);
     console.log("filteredAgeGroupDataByCountry in section2", filteredAgeGroupDataByCountry);
 
     const handleTabOptionChange = (event, newTabOption) => {
@@ -97,9 +97,15 @@ const Section3 = ({id, isActive}) => {
         }
     };
 
+    //chnage the filter for table via select control
     const handleContinentChange = (event) => {
         setSelectedContinent(event.target.value)
-    }
+    };
+
+    //change the filter for chart via select control
+    const handleCountryOrRegionChange = (event) => {
+        setSelectedCountryOrRegion(event.target.value)
+    };
 
     const handleYearChange = (event, newYear) => {
         setSelectedYear(newYear);
@@ -113,6 +119,8 @@ const Section3 = ({id, isActive}) => {
     };
 
     const createTable = (data) => {
+        //remove the content of the canvas before rendering table
+        d3.select("#canvas3").selectAll("svg").remove();
         return(
             <div style={{ maxHeight: "440px", overflowY: "auto" }}>
                 <Table stickyHeader>
@@ -234,6 +242,81 @@ const Section3 = ({id, isActive}) => {
     };
     const createChart = () => {
 
+        // get maxValue for the filtered data, depending on the selectedYear and selectedCountryOrRegion
+        // find the max value by iterating through each ageGroup
+        // this max value will be used to determine the x axis
+        // use flatmap to flatten the values into a single array
+        const countryOrRegionData = ageGroupDataByCountry[selectedCountryOrRegion];
+        const maxValue = Math.max(...ageGroups.flatMap( ageGroup => 
+                parseFloat(countryOrRegionData[ageGroup][selectedYear])
+            )
+        );
+        console.log("maxValue in barchart in section3:", maxValue);
+
+        const margin = { top: 20, right: 80, bottom: 20, left: 100};
+        const width = 900 - margin.left - margin.right;
+        const height = 440 - margin.top - margin.bottom;
+
+        const canvas = d3.select('#canvas3');
+
+        // Remove any existing SVG elements inside the canvas
+        canvas.selectAll('svg').remove();
+
+        const svg = canvas.append("svg")
+                            .attr("width", width + margin.left + margin.right)
+                            .attr("height", height + margin.top + margin.bottom)
+                            .append("g")
+                            .attr("transform", `translate(${margin.left}, ${margin.top})`)
+        //x axis for value
+        const xAxis = d3.scaleLinear()
+                        .domain([0, maxValue])
+                        .range([0, width])
+
+        const xAxisFormat = d3.axisBottom(xAxis)
+                            
+        svg.append("g")
+            .attr("class", "x-axis")
+            .attr("transform", `translate(0, ${height})`)
+            .call(xAxisFormat)
+
+        //y axis for age group
+
+        const yAxis = d3.scaleBand()
+                        .domain(ageGroups)
+                        .range([height, 0])
+                        .padding(0.4)
+
+        const yAxisFormat = d3.axisLeft(yAxis)
+                            
+        svg.append("g")
+            .attr("class", "y-axis")
+            .call(yAxisFormat)
+
+        // bars
+        svg.selectAll(".bar")
+            .data(ageGroups)
+            .enter()
+            .append("rect")
+            .attr("class", "bar")
+            .attr("x", 0)
+            .attr("y", d => yAxis(d))
+            .attr("width", d => xAxis(parseFloat(countryOrRegionData[d][selectedYear])))
+            .attr("height", yAxis.bandwidth())
+            .attr("fill", "steelblue")
+        
+            // labels
+        svg.selectAll(".label")
+            .data(ageGroups)
+            .enter()
+            .append("text")
+            .attr("class", "label")
+            .attr("x", d => xAxis(parseFloat(countryOrRegionData[d][selectedYear])) + 10)
+            .attr("y", d => yAxis(d) + yAxis.bandwidth()/2 )
+            .attr("fill", "black")
+            .style("font-size", "12px")
+            .text( d => parseFloat(countryOrRegionData[d][selectedYear]).toFixed(3) + "%")
+
+
     };
 
     return(
@@ -242,24 +325,30 @@ const Section3 = ({id, isActive}) => {
             <div className="description" id="description">By breaking down the data by age group, we can see that the majority of cancers are in older people.</div>
             <div className="control" id="control">
                 <ToggleButtonTableChart value={selectedTabOption} onChange={handleTabOptionChange}/>
-                {selectedTabOption === "table" 
-                    ? (
-                        <Select sx={{width: "150px"}} value={selectedContinent} onChange={handleContinentChange}>
-                            <MenuItem value="World">World</MenuItem>
-                            <MenuItem value="Africa">Africa</MenuItem>
-                            <MenuItem value="North America">North America</MenuItem>
-                            <MenuItem value="South America">South America</MenuItem>
-                            <MenuItem value="Asia">Asia</MenuItem>
-                            <MenuItem value="Europe">Europe</MenuItem>
-                            <MenuItem value="Oceania">Oceania</MenuItem>
-                        </Select> 
-                    )
-                    : (
-                        <Select>  
-
-                        </Select>
-                    )
-                }
+                <FormControl size="small">
+                    {selectedTabOption === "table" 
+                        ? (
+                            <Select sx={{width: "150px"}} value={selectedContinent} onChange={handleContinentChange}>
+                                <MenuItem value="World">World</MenuItem>
+                                <MenuItem value="Africa">Africa</MenuItem>
+                                <MenuItem value="North America">North America</MenuItem>
+                                <MenuItem value="South America">South America</MenuItem>
+                                <MenuItem value="Asia">Asia</MenuItem>
+                                <MenuItem value="Europe">Europe</MenuItem>
+                                <MenuItem value="Oceania">Oceania</MenuItem>
+                            </Select> 
+                        )
+                        : (
+                            <Select sx={{width: "250px"}} value={selectedCountryOrRegion} onChange={handleCountryOrRegionChange}>
+                                {Object.keys(ageGroupDataByCountry).map((item) => (
+                                        <MenuItem key={item} value={item}>
+                                            {item}
+                                        </MenuItem>
+                                ))}
+                                </Select>
+                        )
+                    }
+                </FormControl>
             </div>
             <div className="canvas" id="canvas3">{selectedTabOption==="table" ? createTable(filteredAgeGroupDataByCountry) : createChart()}</div>
             <div className="slider-control" id="slider-control3">{createSlider()}</div>

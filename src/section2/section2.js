@@ -80,7 +80,7 @@ const Section2 = ({id, isActive}) => {
     }, [section2Data, cancerMapping, cancerTypes]);
 
   
-    console.log("typeDataByCountry in section 2:", typeDataByCountry);
+    console.log("typeDataByCountry in Section 2:", typeDataByCountry);
 
     //filter typeDataByCountry by the selected continent
     const filteredTypeDataByCountry = useMemo(() => {
@@ -99,7 +99,7 @@ const Section2 = ({id, isActive}) => {
         })
         return Object.fromEntries(filteredEntries);
     },[typeDataByCountry, selectedContinent]);
-    console.log("filteredTypeDataByCountry", filteredTypeDataByCountry);
+    console.log("filteredTypeDataByCountry in Section 2:", filteredTypeDataByCountry);
 
     //change the tab option
     const handleTabOptionChange = (event, newOption) => {
@@ -135,7 +135,7 @@ const Section2 = ({id, isActive}) => {
        console.log("Year Range on section2 slider:", newRange);
     };
 
-    //create slider
+    //create slider for table and chart
     const createSlider = () => {
         return(
             <YearRangeSlider yearRange={yearRange} handleYearRangeChange={handleYearRangeChange}/>
@@ -296,14 +296,15 @@ const Section2 = ({id, isActive}) => {
 
         const countryOrRegionData = typeDataByCountry[selectedCountryOrRegion];
 
-        //find the max value by iterating through each cancer type across the selected year range
-        //use flatmap to flatten the values into a single array
+        // find the max value by iterating through each cancer type across the selected year range
+        // this max value will be used to determine the y axis
+        // use flatmap to flatten the values into a single array
         const maxValue = Math.max(
             ...cancerTypes.flatMap(cancerType => 
                 yearRange.map(year => parseFloat(countryOrRegionData[cancerType][year]))
             )
         );
-        console.log("maxValue in chart", maxValue);
+        console.log("maxValue for chart in Section 2: ", maxValue);
 
         const margin = { top:20, right: 220, bottom: 40, left: 40};
         const width = 900 - margin.left - margin.right;
@@ -380,9 +381,9 @@ const Section2 = ({id, isActive}) => {
                         .domain(cancerTypes)
                         .range(customColorPalette)
         
-        //add vertical lines for each tick on x axis
-        const allYearsFromYearRange = d3.range(yearRange[0], yearRange[1]+1);
-        console.log("Section 2 - allYearsFromYearRange", allYearsFromYearRange);
+        //add vertical lines for each tick on x axis, depending on the selected year range
+        const allYearsFromYearRange = d3.range(yearRange[0], yearRange[1]+1); 
+        console.log("allYearsFromYearRange in Section 2: ", allYearsFromYearRange); //generates [1990, 1991, ..., 2019]
 
         svg.selectAll(".vertical-line")
             .data(allYearsFromYearRange)
@@ -396,26 +397,28 @@ const Section2 = ({id, isActive}) => {
             .attr("stroke", "#FBFBFB")
             .attr("stroke-width", 3);
         
-        //prepare data for each cancer type
+        //prepare data for each cancer type & create lines for each cancertype using line generator
         cancerTypes.forEach(cancerType => {
-            const data = yearRange.map(year => (
+            const dataForEachCancerType = yearRange.map(year => (
                 {
                     year: year,
                     value: parseFloat(typeDataByCountry[selectedCountryOrRegion][cancerType][year]) || 0 // handle missing data
                 }
             ));
+            // the ouput data looks like dataForEachCancerType = [{year: 1990, value: 0.02}, {year: 1991, value: 0.02}, ...]
+
             svg.append("path")
-                .datum(data)
+                .datum(dataForEachCancerType)
                 .attr("fill", "none")
                 .attr("stroke", color(cancerType))
                 .attr("stroke-width", 1.5)
-                .attr("d", line)
+                .attr("d", line) // attribute d specifies the path to be drawn
                 .attr("class", "line")
                 .attr("id", `${cancerType}`)
             
             //add labels to line
             svg.append("text")
-                .datum(data[data.length-1]) // Last data point
+                .datum(dataForEachCancerType[dataForEachCancerType.length-1]) // Last data point
                 .attr("transform", d => `translate(${xAxis(d.year)},${yAxis(d.value)})`)
                 .attr("x", 20)
                 .attr("dy", "0.35em")
@@ -473,8 +476,6 @@ const Section2 = ({id, isActive}) => {
                             .duration(500)
                             .style("opacity", 0)
             })
-
-
     };
 
 

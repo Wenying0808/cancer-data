@@ -481,7 +481,7 @@ const Section2 = ({id, isActive}) => {
 
     return(
         <section id={id} className={`section ${isActive ? "active" : ""}`}>
-            <div className="title" id="title">{`Prevalence Of cancer by type (${yearRange[0]} - ${yearRange[1]})`}</div>
+            <div className="title" id="title">{`Prevalence Of Cancer By Type (${yearRange[0]} - ${yearRange[1]})`}</div>
             <div className="description" id="description">This related chart shows the estimated number of people with each type of cancer:</div>
             <div className="control" id="control">
                 <ToggleButtonTableChart value={selectedTabOption} onChange={handleTabOptionChange}/>

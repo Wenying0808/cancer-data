@@ -343,7 +343,7 @@ const Section3 = ({id, isActive}) => {
             .append("text")
             .attr("class", "label")
             .attr("x", d => xAxis(parseFloat(countryOrRegionData[d][selectedYear])) + 10)
-            .attr("y", d => yAxis(d) + yAxis.bandwidth()/2 )
+            .attr("y", d => yAxis(d) + yAxis.bandwidth()/2 + 3)
             .attr("fill", "black")
             .style("font-size", "12px")
             .text( d => parseFloat(countryOrRegionData[d][selectedYear]).toFixed(3) + "%")

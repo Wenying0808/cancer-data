@@ -395,7 +395,20 @@ const Section2 = ({id, isActive}) => {
             .attr("y1", d => 0)
             .attr("y2", height)
             .attr("stroke", "#FBFBFB")
-            .attr("stroke-width", 3);
+            .attr("stroke-width", 1);
+
+        svg.selectAll(".vertical-band")
+            .data(allYearsFromYearRange)
+            .enter()
+            .append("line")
+            .attr("class", "vertical-band")
+            .attr("x1", d => xAxis(d))
+            .attr("x2", d => xAxis(d))
+            .attr("y1", d => 0)
+            .attr("y2", height)
+            .attr("stroke", "#E0E0E0")
+            .attr("stroke-width", 10)
+            .attr("stroke-opacity", 0);
         
         //prepare data for each cancer type & create lines for each cancertype using line generator
         cancerTypes.forEach(cancerType => {
@@ -442,7 +455,7 @@ const Section2 = ({id, isActive}) => {
         
         // show tooltip when hovering on the vertical line
         // Add event listeners for vertical lines to show tooltip on hover
-        svg.selectAll(".vertical-line")
+        svg.selectAll(".vertical-band")
             .on("mouseover", (event, year) => {
                 const yearData = cancerTypes.map(cancerType => (
                     {

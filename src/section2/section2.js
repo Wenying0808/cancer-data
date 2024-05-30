@@ -431,7 +431,7 @@ const Section2 = ({id, isActive}) => {
 
         //tooltip
         const tooltip = d3.select("body").append("div")
-                                .attr("class", "tooltip")
+                                .attr("class", "tooltip-section2-chart")
                                 .style("opacity", 0)
                                 .style("position", "absolute")
                                 .style("background-color", "white")
@@ -458,11 +458,11 @@ const Section2 = ({id, isActive}) => {
                             .style("opacity", 1)
                 
                 tooltip.html(() => {
-                    const tooltipContent = `<div style="font-weight: 600; font-size: 14px; font-height: 24px;" > ${year} </div><br>` + 
+                    const tooltipContent = `<div style="font-weight: 600; font-size: 14px; line-height: 24px;" > ${year} </div><br>` + 
                                             sortedYearData.map( d => 
                                                 `<div style="display: flex; flex-direction: row; align-items: center; gap: 8px; padding: 3px 0; ">
                                                     <div style=" width: 16px; height: 16px; background-color: ${color(d.type)}; "></div>
-                                                    <div style="font-Weight: 500; font-size: 12px; font-height: 16px; margin: 0; padding: 0;">${d.type}: ${d.value}</div>   
+                                                    <div style="font-weight: 500; font-size: 12px; line-height: 16px; margin: 0; padding: 0;">${d.type}: ${d.value}</div>   
                                                 </div>`
                                             ).join("")
                     return tooltipContent;

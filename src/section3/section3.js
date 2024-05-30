@@ -291,6 +291,17 @@ const Section3 = ({id, isActive}) => {
         svg.append("g")
             .attr("class", "y-axis")
             .call(yAxisFormat)
+        
+        //tooltips
+       const tooltip = d3.select("body").append("div")
+       .attr("class", "tooltip-section3-chart")
+       .style("opacity", 0)
+       .style("position", "absolute")
+       .style("background-color", "white")
+       .style("box-shadow", "0px 1px 5px 0px rgba(0, 0, 0, 0.25)")
+       .style("border-radius", "16px")
+       .style("padding", "16px")
+       .style("pointer-events", "none");
 
         // bars
         svg.selectAll(".bar")
@@ -303,8 +314,29 @@ const Section3 = ({id, isActive}) => {
             .attr("width", d => xAxis(parseFloat(countryOrRegionData[d][selectedYear])))
             .attr("height", yAxis.bandwidth())
             .attr("fill", "steelblue")
+            .on("mouseover", (event, d) => {
+
+                const value = parseFloat(countryOrRegionData[d][selectedYear]);
+
+                tooltip.transition()
+                            .duration(200)
+                            .style("opacity", 1)
+                
+                tooltip.html(() => {
+                    const tooltipContent = `<div style="font-weight: 600; font-size: 14px; line-height: 24px;" > ${selectedYear} </div><div style="font-weight: 500; font-size: 12px; line-height: 16px; margin: 0; padding: 0;">${d}: ${value.toFixed(3)}%</div>`;
+                    return tooltipContent;
+                })
+                        .style("left", (event.pageX + 5) + "px")
+                        .style("top", (event.pageY - 80) + "px");
+            
+            })
+            .on("mouseout", () => {
+                tooltip.transition()
+                            .duration(500)
+                            .style("opacity", 0)
+            })
         
-            // labels
+        // labels
         svg.selectAll(".label")
             .data(ageGroups)
             .enter()
@@ -315,6 +347,8 @@ const Section3 = ({id, isActive}) => {
             .attr("fill", "black")
             .style("font-size", "12px")
             .text( d => parseFloat(countryOrRegionData[d][selectedYear]).toFixed(3) + "%")
+
+        
 
 
     };

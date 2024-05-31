@@ -97,6 +97,146 @@ const Section4 = ({id, isActive}) => {
         return (<YearSlider year={mapYear} handleYearChange={handleMapYearChange}/>);
     };
 
+    const createTable = (data) => {
+        return(
+            <div style={{ maxHeight: "440px", overflowY: "auto" }}>
+                <Table stickyHeader>
+                    {/*table header: country, cancer type, table subheader: year 1 and year 2 */}
+                    <TableHead>
+                        <TableRow>
+                            <TableCell 
+                                sx={{
+                                    minWidth: '150px',
+                                    backgroundColor: '#FBFBFB',
+                                    position: 'sticky',
+                                    top: 0,
+                                    zIndex: 1,
+                                    left: 0,
+                                    fontWeight: 600
+                                }}
+                            >
+                                Country / Region
+                            </TableCell>
+                            
+                            <TableCell 
+                                sx={{ 
+                                    minWidth: '150px',
+                                    backgroundColor: '#FBFBFB',
+                                    position: 'sticky',
+                                    top: 0,
+                                    left: 150,
+                                    zIndex: 1,
+                                    fontWeight:600,
+                                }} 
+                                align='left'
+                            >
+                                {`${yearRange[0]} (%)`}
+                            </TableCell>
+
+                            <TableCell 
+                                sx={{ 
+                                    minWidth: '150px',
+                                    backgroundColor: '#FBFBFB',
+                                    position: 'sticky',
+                                    top: 0,
+                                    left: 150,
+                                    zIndex: 1,
+                                    fontWeight: 600,
+                                }} 
+                                align='left'
+                            >
+                                {`${yearRange[1]} (%)`}
+                            </TableCell>
+
+                        </TableRow>
+                    </TableHead>
+                    {/*row: country, year 1 and year 2 */}
+                    <TableBody>
+                        {Object.keys(data).map((country) => (
+                            data[country]["Code"] ? (
+                                <TableRow key={country} sx={{'&:hover':{backgroundColor:'#E5EBF8'}}}>
+                                    <TableCell
+                                        sx={{
+                                            position: 'sticky',
+                                            left: 0,
+                                            top: 57,
+                                            zIndex: 1,
+                                            backgroundColor: '#F5F5F5',
+                                        }}
+                                    >
+                                        {country}
+                                    </TableCell>
+                                    <TableCell>
+                                        {data[country]["Burden Rate"][yearRange[0]]}
+                                    </TableCell>
+                                    <TableCell>
+                                        {data[country]["Burden Rate"][yearRange[1]]}
+                                    </TableCell>
+                                    
+                                </TableRow>
+                            ) : null   
+                        ))}
+
+                        {/* only show the other row and its rows when the selectedContinent is World as it's regional data instead of national data*/}
+                        {selectedContinent === "World" && (
+                            <>
+                                <TableRow>
+                                    <TableCell
+                                        sx={{
+                                            position: 'sticky',
+                                            left: 0,
+                                            top: 57,
+                                            zIndex: 1,
+                                            backgroundColor: '#E0E0E0',
+                                            fontWeight: 600
+                                        }}
+                                    >
+                                        Other
+                                    </TableCell>
+                                    <TableCell
+                                        colSpan={2}
+                                        sx={{
+                                            backgroundColor: '#E0E0E0',
+                                        }}
+                                    >
+                                    </TableCell>
+                                </TableRow>
+                                {Object.keys(data).map((country) => (
+                                    /*only national data has country code*/
+                                    data[country]["Code"] 
+                                    ? null 
+                                    : (
+                                        <TableRow key={country} sx={{'&:hover':{backgroundColor:'#E5EBF8'}}}>
+                                            <TableCell
+                                                sx={{
+                                                    position: 'sticky',
+                                                    left: 0,
+                                                    top: 57,
+                                                    zIndex: 1,
+                                                    backgroundColor: '#F5F5F5',
+                                                }}
+                                            >
+                                                {country}
+                                            </TableCell>
+                                            <TableCell>
+                                                {data[country]["Burden Rate"][yearRange[0]]}
+                                            </TableCell>
+                                            <TableCell>
+                                                {data[country]["Burden Rate"][yearRange[1]]}
+                                            </TableCell>
+                                            
+                                        </TableRow>
+                                    )  
+                                ))}
+                            </>
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
+
+        );
+    };
+
     return(
         <section id={id} className={`section ${isActive ? "active" : ""}`}>
             <div className="title" id="title">
@@ -132,7 +272,7 @@ const Section4 = ({id, isActive}) => {
                     }
                 </FormControl>
             </div>
-            <div className="canvas" id="canvas4"></div>
+            <div className="canvas" id="canvas4">{selectedTabOption === "table" ? createTable(burdenDataByCountry) : null}</div>
             <div className="slider-control" id="slider-control4">{selectedTabOption !== "map" ? createTableChartSlider() : createMapSlider()}</div>
             <div className="resource" id="resource">Data source: IHME, Global Burden of Disease (2019)</div>
         </section>

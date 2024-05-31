@@ -236,7 +236,7 @@ const Section1 = ({id, isActive}) => {
     };
 
     const handleTabOptionChange = (event, newTabOption) => {
-        if (newTabOption !== null){
+        if (newTabOption !== selectedTabOption){
             setSelectedTabOption(newTabOption);
         }
         /*console.log("previous selectedOption: ", selectedOption);*/

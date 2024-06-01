@@ -115,7 +115,7 @@ const Section1 = ({id, isActive}) => {
 
     }, [sortBy, sortOrder, filteredDataByContinent]);
 
-    console.log("section1 sortedData", sortedAndFilteredDataByContinent );
+    console.log("section1 sortedAndFilteredDataByContinent", sortedAndFilteredDataByContinent );
     
     //sorting indicator
     const getSortingIcon = (column) => {
@@ -157,9 +157,6 @@ const Section1 = ({id, isActive}) => {
     };
 
     const createTable = (data) => {
-
-        // Convert data object to an array of entries
-        const dataArray = Object.entries(data);
 
         //sort data function
         const sortData = (column) => {
@@ -224,14 +221,62 @@ const Section1 = ({id, isActive}) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {dataArray.map(([countryName, countryData]) => (
-                                <TableRow className="row" key={countryName} >
-                                    <TableCell className="cell" sx={{backgroundColor: '#F5F5F5'}}>{countryData.Entity}</TableCell>
-                                    <TableCell className="cell" >{countryData["Year Data"][yearRange[0]] || 'N/A' }</TableCell>
-                                    <TableCell className="cell" >{countryData["Year Data"][yearRange[1]] || 'N/A' }</TableCell>
+                        {Object.keys(data).map(country => (
+                           data[country]["Code"]
+                            ? (
+                                <TableRow key={country} sx={{'&:hover':{backgroundColor:'#E5EBF8'}}}>
+                                    <TableCell
+                                        sx={{
+                                            backgroundColor: '#F5F5F5',
+                                        }}
+                                    >
+                                        {country}
+                                    </TableCell>
+                                    <TableCell>{data[country]["Year Data"][yearRange[0]]}</TableCell>
+                                    <TableCell>{data[country]["Year Data"][yearRange[1]]}</TableCell>
                                 </TableRow>
                             )
-                            ) 
+                            : null
+                        ))}
+                        {selectedContinent === "World" && (
+                            <>
+                            <TableRow>
+                                <TableCell
+                                    sx={{
+                                        backgroundColor: '#E0E0E0',
+                                        fontWeight: 600
+                                    }}
+                                >
+                                    Other
+                                </TableCell>
+                                <TableCell
+                                    colSpan={2}
+                                    sx={{
+                                        backgroundColor: '#E0E0E0',
+                                    }}
+                                >   
+                                </TableCell>   
+                            </TableRow>
+
+                            {Object.keys(data).map(country => (
+                                data[country]["Code"]
+                                ? null
+                                : (
+                                    <TableRow key={country} sx={{ '&:hover':{backgroundColor:'#E5EBF8'} }}>
+                                        <TableCell
+                                            sx={{
+                                                backgroundColor: '#F5F5F5',
+                                            }}
+                                        >
+                                            {country}
+                                        </TableCell>
+                                        <TableCell>{data[country]["Year Data"][yearRange[0]]}</TableCell>
+                                        <TableCell>{data[country]["Year Data"][yearRange[1]]}</TableCell>
+                                    </TableRow>
+                                )
+                            ))}
+                            </>
+                        )
                         }
                     </TableBody>
                 </Table>

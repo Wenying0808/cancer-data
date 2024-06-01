@@ -9,6 +9,7 @@ import WorldMap from "../worldmap/worldmap";
 import { Table, TableHead, TableRow, TableCell, TableBody, Select, MenuItem, FormControl } from '@mui/material';
 import iso3166Lookup from "iso3166-lookup";
 import continentCountryIds from "../worldmap/ContinentCountryId";
+import ReactMultiSelect from "../react-select/ReactMultiSelect";
 
 
 const Section4 = ({id, isActive}) => {
@@ -18,6 +19,7 @@ const Section4 = ({id, isActive}) => {
     const [mapYear, setMapYear] = useState(2019);
     const[selectedContinent, setSelectedContinent] = useState("World");
     const[selectedCountryOrRegion, setSelectedCountryOrRegion] = useState("European Region (WHO)");
+    const [selectedMultiOptions, setSelectedMultiOptions] = useState([]);
 
 
     // fetch data from csv
@@ -62,7 +64,16 @@ const Section4 = ({id, isActive}) => {
     }, [section4Data]);
 
     console.log("section4 burdenDataByCountry", burdenDataByCountry);
-    console.log("section4 Object.entries(burdenDataByCountry)", Object.entries(burdenDataByCountry))
+    console.log("section4 Object.entries(burdenDataByCountry)", Object.entries(burdenDataByCountry));
+
+    // generate options for multiSelect
+
+    const multiSelectOptions = useMemo(() => {
+        return Object.keys(burdenDataByCountry).map((key) => ({
+            label: key,
+            value: key
+        }));
+    }, [burdenDataByCountry])
 
     // filter datByCountry by selectedContinent for table and map
     const filteredBurdenDataByCountry = useMemo(() => {
@@ -95,6 +106,10 @@ const Section4 = ({id, isActive}) => {
 
     const handleCountryOrRegionChange = (event) => {
         setSelectedCountryOrRegion(event.target.value);
+    };
+
+    const handleMultiSelectChange = (selectedOptions) => {
+        setSelectedMultiOptions(selectedOptions);
     };
 
     //change the year range
@@ -267,6 +282,10 @@ const Section4 = ({id, isActive}) => {
         return(<WorldMap mapYear={mapYear} dataByCountry={burdenDataByCountry} selectedContinent={selectedContinent}/>);
     };
 
+    const createChart = () => {
+
+    };
+
     return(
         <section id={id} className={`section ${isActive ? "active" : ""}`}>
             <div className="title" id="title">
@@ -278,7 +297,7 @@ const Section4 = ({id, isActive}) => {
             <div className="control" id="control">
                 <ToggleButtonTableMapChart value={selectedTabOption} onChange={handleTabOptionChange}/>
                 <FormControl size="small">
-                    {selectedTabOption !== "chart" 
+                    {selectedTabOption === "table" 
                         ? (
                             <Select sx={{width: "150px"}} value={selectedContinent} onChange={handleContinentChange}>
                                 <MenuItem value="World">World</MenuItem>
@@ -290,19 +309,28 @@ const Section4 = ({id, isActive}) => {
                                 <MenuItem value="Oceania">Oceania</MenuItem>
                             </Select> 
                         )
-                        : (
-                            <Select sx={{width: "250px"}} value={selectedCountryOrRegion} onChange={handleCountryOrRegionChange}>
-                                {Object.keys(burdenDataByCountry).map((item) => (
-                                        <MenuItem key={item} value={item}>
-                                            {item}
-                                        </MenuItem>
-                                ))}
-                                </Select>
-                        )
+                        : selectedTabOption === "map" 
+                            ? (
+                                <Select sx={{width: "250px"}} value={selectedCountryOrRegion} onChange={handleCountryOrRegionChange}>
+                                    {Object.keys(burdenDataByCountry).map((item) => (
+                                            <MenuItem key={item} value={item}>
+                                                {item}
+                                            </MenuItem>
+                                    ))}
+                                    </Select>
+                            ) 
+                            : (
+                                <ReactMultiSelect defaultValue={[multiSelectOptions[1], multiSelectOptions[54],multiSelectOptions[66]]} options={multiSelectOptions} onChange={handleMultiSelectChange}></ReactMultiSelect>
+                            )
                     }
                 </FormControl>
             </div>
-            <div className="canvas" id="canvas4">{selectedTabOption === "table" ? createTable(filteredBurdenDataByCountry) : createMap()}</div>
+            <div className="canvas" id="canvas4">
+                {selectedTabOption === "table" ? createTable(filteredBurdenDataByCountry) 
+                    : selectedTabOption === "map" ?  createMap()
+                        : createChart()
+                }
+            </div>
             <div className="slider-control" id="slider-control4">{selectedTabOption !== "map" ? createTableChartSlider() : createMapSlider()}</div>
             <div className="resource" id="resource">Data source: IHME, Global Burden of Disease (2019)</div>
         </section>

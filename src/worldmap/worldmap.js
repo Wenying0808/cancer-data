@@ -83,7 +83,8 @@ const WorldMap = ({mapYear, dataByCountry, selectedContinent}) => {
                     {filteredMapFeatures && filteredMapFeatures.map((feature) => {
                         const countryId = feature.id;
                         const numberValue = selectedYearValueByCountry[countryId];
-                        const countryName = iso3166Lookup.findNum3(countryId, "name");
+                        const country = dataByCountry[Object.keys(dataByCountry).find(country => dataByCountry[country].id === countryId)]?.Entity || "Unknown";
+                        /*const countryName = iso3166Lookup.findNum3(countryId, "name");*/ /*incoorect name for taiwan*/
 
                             return(
                                 <path
@@ -99,7 +100,7 @@ const WorldMap = ({mapYear, dataByCountry, selectedContinent}) => {
                                                 .style("left", (event.pageX + 5) + "px")
                                                 .style("top", (event.pageY - 100) + "px")
                                                 .html(
-                                                        `${countryName}<br><br>${numberValue ? numberValue : "No data available"}`
+                                                        `${country}<br><br>${numberValue ? numberValue : "No data available"}`
                                                 )
                                         
                                         // Change the stroke width and color on hover    

@@ -58,7 +58,7 @@ const WorldMap = ({mapYear, dataByCountry, selectedContinent}) => {
 
     // Define color scale with default domain (if no valid data)
     const colorScale = d3.scaleSequential(d3.interpolateOranges)
-                            .domain([0, 30])
+                            .domain([minOfSelectedYearValueByCountry, maxOfSelectedYearValueByCountry])
 
 
     //tooltip
@@ -119,10 +119,10 @@ const WorldMap = ({mapYear, dataByCountry, selectedContinent}) => {
 
                 {/*legend*/}
                 <g transform="translate(10, 120)">
-                    {d3.range(0, 30, (30 - 0)/10).reverse().map((d, i)=>(
+                    {d3.range(0, maxOfSelectedYearValueByCountry, (maxOfSelectedYearValueByCountry - 0)/10).reverse().map((d, i)=>(
                         <g key={i} transform={`translate(0, ${i * 20})`}>
                             <rect width="20px" height="20px" fill={colorScale(d)}></rect>
-                            <text x="28px" y="20px" fontSize="10px">{d.toFixed()}%</text>
+                            <text x="28px" y="20px" fontSize="10px">{d.toFixed()}</text>
                         </g>
                     ))}
                     <g transform="translate(0, 240)">

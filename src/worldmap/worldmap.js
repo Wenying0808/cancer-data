@@ -95,13 +95,12 @@ const WorldMap = ({mapYear, dataByCountry, selectedContinent}) => {
                                     stroke="white"
                                     strokeWidth={1}
                                     onMouseOver={(event)=>{
-                                        const [px, py] = d3.pointer(event);
                                         tooltip.style("visibility", "visible")
+                                                .style("left", (event.pageX + 5) + "px")
+                                                .style("top", (event.pageY - 100) + "px")
                                                 .html(
                                                         `${countryName}<br><br>${numberValue ? numberValue : "No data available"}`
                                                 )
-                                                .style("left", `${px + 300}px`)
-                                                .style("top", `${py + 100}px`);
                                         
                                         // Change the stroke width and color on hover    
                                         d3.select(event.currentTarget).attr("stroke", "black");

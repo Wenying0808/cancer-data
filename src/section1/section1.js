@@ -28,7 +28,7 @@ const Section1 = ({id, isActive}) => {
     const [sortOrder, setSortOrder] = useState("asc");
     const [hoveredColumn, setHoveredColumn] = useState(null);
 
-    //fetch section 1 data
+    // fetch section 1 data
     useEffect(() => {
         d3.csv(section1Dataset).then(function(data, error){
             if(error){
@@ -69,7 +69,7 @@ const Section1 = ({id, isActive}) => {
     console.log("Section1 dataByCountry:",dataByCountry);
     /*console.log("all country names from lookup: ",iso3166Lookup.getAllCountryNames());*/
 
-    //memorize filter Data
+    // memorize filter Data
     const filteredDataByContinent = useMemo(() => {
         const filtered = [...Object.values(dataByCountry)]; //copy dataByCountry
         return filtered.filter(row => {
@@ -80,9 +80,11 @@ const Section1 = ({id, isActive}) => {
                 return continentCountryIds[selectedContinent].includes(parseInt(countryId));
             }
         })
-    },[dataByCountry, selectedContinent])
+    },[dataByCountry, selectedContinent]);
 
-    //memorize sorted Data
+    console.log("section1 filteredDataByContinent]", filteredDataByContinent);
+
+    // memorize sorted Data
     const sortedData = useMemo(() => {
 
         return [...filteredDataByContinent].sort((a, b) => {
@@ -98,8 +100,8 @@ const Section1 = ({id, isActive}) => {
         });
 
     }, [sortBy, sortOrder, filteredDataByContinent]);
-    
-    console.log("sortedData", sortedData);
+
+    console.log("section1 sortedData", sortedData);
     
     //sorting indicator
     const getSortingIcon = (column) => {
@@ -132,11 +134,11 @@ const Section1 = ({id, isActive}) => {
         } else {
             setYearRange(newRange);
         }
-       console.log("Year Range on section 1 table slider:", newRange);
+       console.log("Year Range on section1 table slider:", newRange);
     };
 
     const handleMapYearChange = (event, newYear) => {
-        console.log("newYear on map slider", newYear)
+        console.log("section1 newYear on map slider", newYear)
         setMapYear(newYear);
     };
 
@@ -151,7 +153,7 @@ const Section1 = ({id, isActive}) => {
                 setSortBy(column);
                 setSortOrder('asc');
             }
-        }
+        };
         
         return(
             <div style={{ maxHeight: "400px", overflowY: "auto" }}>
@@ -206,13 +208,14 @@ const Section1 = ({id, isActive}) => {
                     </TableHead>
                     <TableBody>
                         {data.map((row) => (
-                            <TableRow className="row" key={row.Entity} >
-                                <TableCell className="cell" >{row.Entity}</TableCell>
-                                <TableCell className="cell" >{row[yearRange[0]]}</TableCell>
-                                <TableCell className="cell" >{row[yearRange[1]]}</TableCell>
-                            </TableRow>
-                            )  
-                        )}
+                                <TableRow className="row" key={row.Entity} >
+                                    <TableCell className="cell" sx={{backgroundColor: '#F5F5F5'}}>{row.Entity}</TableCell>
+                                    <TableCell className="cell" >{row[yearRange[0]]}</TableCell>
+                                    <TableCell className="cell" >{row[yearRange[1]]}</TableCell>
+                                </TableRow>
+                            )
+                            ) 
+                        }
                     </TableBody>
                 </Table>
             </div>

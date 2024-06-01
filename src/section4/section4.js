@@ -31,7 +31,7 @@ const Section4 = ({id, isActive}) => {
     }, []);
     console.log("Section4 Fetched CSV Data:", section4Data);
 
-    //group data by country
+    // group data by country
     const burdenDataByCountry = useMemo(() => {
         const dataByCountry = {};
         section4Data.forEach((row) => {
@@ -44,14 +44,35 @@ const Section4 = ({id, isActive}) => {
             if(!dataByCountry[country]["Burden Rate"]){
                 dataByCountry[country]["Burden Rate"] = {};
             };
-
-            dataByCountry[country]["Code"]=row.Code;
-            dataByCountry[country]["Burden Rate"][year]=row["DALYs (Disability-Adjusted Life Years) - Neoplasms - Sex: Both - Age: Age-standardized (Rate)"];  
+            
+            dataByCountry[country]["Burden Rate"][year] = row["DALYs (Disability-Adjusted Life Years) - Neoplasms - Sex: Both - Age: Age-standardized (Rate)"];  
+            dataByCountry[country]["Code"] = row.Code;
+            dataByCountry[country]["Entity"] = row.Entity;
         });
         return dataByCountry;
     }, [section4Data]);
 
     console.log("section4 burdenDataByCountry", burdenDataByCountry);
+    console.log("section4 Object.entries(burdenDataByCountry)", Object.entries(burdenDataByCountry))
+
+    // filter datByCountry by selectedContinent for table and map
+    const filteredBurdenDataByCountry = useMemo(() => {
+        // convert object to key-value pair array, the first array is country, and the second array is its data
+        const filteredData = Object.entries(burdenDataByCountry).filter(([country, data]) => {
+            const countryCode = data["Code"];
+            const countryId = iso3166Lookup.findAlpha3(countryCode, "num3");
+            const countriesInSelectedContinent = continentCountryIds[selectedContinent];
+
+            if(selectedContinent === "World"){
+                return true;
+            } else {
+                return countriesInSelectedContinent && countriesInSelectedContinent.includes(parseInt(countryId))
+            }
+        });
+        return Object.fromEntries(filteredData);
+
+    }, [burdenDataByCountry, selectedContinent]);
+    console.log("section4 filteredBurdenDataByCountry", filteredBurdenDataByCountry);
 
     const handleTabOptionChange = (event, newTabOption) => {
         if(newTabOption !== selectedTabOption){
@@ -130,7 +151,7 @@ const Section4 = ({id, isActive}) => {
                                 }} 
                                 align='left'
                             >
-                                {`${yearRange[0]} (%)`}
+                                {`${yearRange[0]}`}
                             </TableCell>
 
                             <TableCell 
@@ -145,7 +166,7 @@ const Section4 = ({id, isActive}) => {
                                 }} 
                                 align='left'
                             >
-                                {`${yearRange[1]} (%)`}
+                                {`${yearRange[1]}`}
                             </TableCell>
 
                         </TableRow>
@@ -157,10 +178,6 @@ const Section4 = ({id, isActive}) => {
                                 <TableRow key={country} sx={{'&:hover':{backgroundColor:'#E5EBF8'}}}>
                                     <TableCell
                                         sx={{
-                                            position: 'sticky',
-                                            left: 0,
-                                            top: 57,
-                                            zIndex: 1,
                                             backgroundColor: '#F5F5F5',
                                         }}
                                     >
@@ -240,7 +257,7 @@ const Section4 = ({id, isActive}) => {
     return(
         <section id={id} className={`section ${isActive ? "active" : ""}`}>
             <div className="title" id="title">
-                {selectedTabOption !=="map" ? `The global disease burden from cancer (${yearRange[0]}-${yearRange[1]})` : `The global disease burden from cancer (${mapYear})`}
+                {selectedTabOption !=="map" ? `Disease Burden Rates From Cancers (${yearRange[0]} - ${yearRange[1]})` : `Disease Burden Rates From Cancers (${mapYear})`}
             </div>
             <div className="description" id="description">
                 Disability-Adjusted Life Years (DALYs) per 100,000 individuals from all cancer types.
@@ -272,7 +289,7 @@ const Section4 = ({id, isActive}) => {
                     }
                 </FormControl>
             </div>
-            <div className="canvas" id="canvas4">{selectedTabOption === "table" ? createTable(burdenDataByCountry) : null}</div>
+            <div className="canvas" id="canvas4">{selectedTabOption === "table" ? createTable(filteredBurdenDataByCountry) : null}</div>
             <div className="slider-control" id="slider-control4">{selectedTabOption !== "map" ? createTableChartSlider() : createMapSlider()}</div>
             <div className="resource" id="resource">Data source: IHME, Global Burden of Disease (2019)</div>
         </section>

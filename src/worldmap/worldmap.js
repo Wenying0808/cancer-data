@@ -34,8 +34,8 @@ const WorldMap = ({mapYear, dataByCountry, selectedContinent}) => {
 
     //store country id as key and value of the seledted mapYear as key value
     for (const country in dataByCountry){
-        if (dataByCountry[country].hasOwnProperty(mapYear)){
-            const value = dataByCountry[country][mapYear];
+        if (dataByCountry[country]["Year Data"].hasOwnProperty(mapYear)){
+            const value = dataByCountry[country]["Year Data"][mapYear];
             const countryId = dataByCountry[country].id;
             selectedYearValueByCountry[countryId] = value;
             const numberValue = parseFloat(value);
@@ -51,7 +51,8 @@ const WorldMap = ({mapYear, dataByCountry, selectedContinent}) => {
     console.log("minOfSelectedYearValueByCountry", minOfSelectedYearValueByCountry);
     console.log("maxOfSelectedYearValueByCountry", maxOfSelectedYearValueByCountry);
 
-    const filteredMapFeatures = selectedContinent === "World"
+    const filteredMapFeatures = 
+        selectedContinent === "World"
         ? (mapFeatures.features || []) // Provide a default empty array if mapFeatures.features is undefined
         : (mapFeatures.features || []).filter(feature => continentCountryIds[selectedContinent].includes(parseInt(feature.id)));
 

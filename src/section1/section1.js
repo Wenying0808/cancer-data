@@ -45,15 +45,25 @@ const Section1 = ({id, isActive}) => {
         const dataByCou = {};
         //group data per country
         section1Data.forEach((row) => {
-            if(!dataByCou[row.Entity]){
-                dataByCou[row.Entity] = {Entity: row.Entity}
+            const country = row.Entity;
+            const year = row.Year;
+            if(!dataByCou[country]){
+                dataByCou[country] = {}
             }
+            if(!dataByCou[country]["Year Data"]){
+                dataByCou[country]["Year Data"] = {};
+            }
+            if(!dataByCou[country]["Year Data"][year]){
+                dataByCou[country]["Year Data"][year] = {};
+            }
+            
+            dataByCou[country]["Code"] = row.Code;
+            dataByCou[country]["Entity"] = row.Entity;
             //add data from 1990 to 2019 to each country
-            dataByCou[row.Entity][row.Year] = row["Current number of cases of neoplasms per 100 people, in both sexes aged all ages"];
-            dataByCou[row.Entity]["Code"] = row["Code"];
+            dataByCou[country]["Year Data"][year] = row["Current number of cases of neoplasms per 100 people, in both sexes aged all ages"];
     
             //add country code from iso to the data
-            if (!dataByCou[row.Entity].hasOwnProperty("id")) {
+            if (!dataByCou[country].hasOwnProperty("id")) {
                 const countryDetail = iso3166Lookup.findAlpha3(row.Code); //Find country details by ISO 3166-1 Alpha-3
                 console.log("countryDetail", countryDetail);
                 if(countryDetail){
@@ -66,42 +76,46 @@ const Section1 = ({id, isActive}) => {
     }, [section1Data]);
 
 
-    console.log("Section1 dataByCountry:",dataByCountry);
+    console.log("Section1 dataByCountry:" ,dataByCountry);
     /*console.log("all country names from lookup: ",iso3166Lookup.getAllCountryNames());*/
 
     // memorize filter Data
     const filteredDataByContinent = useMemo(() => {
-        const filtered = [...Object.values(dataByCountry)]; //copy dataByCountry
-        return filtered.filter(row => {
+        const filteredData = Object.entries(dataByCountry).filter(([countryName, countryData]) => {
+            const countryCode = countryData["Code"];
+            const countryId = iso3166Lookup.findAlpha3(countryCode, "num3");
+            const countriesInSelectedContinent = continentCountryIds[selectedContinent];
             if (selectedContinent === "World"){
                 return true; // show all data
             } else {
-                const countryId = row.id;
-                return continentCountryIds[selectedContinent].includes(parseInt(countryId));
-            }
-        })
-    },[dataByCountry, selectedContinent]);
-
-    console.log("section1 filteredDataByContinent]", filteredDataByContinent);
-
-    // memorize sorted Data
-    const sortedData = useMemo(() => {
-
-        return [...filteredDataByContinent].sort((a, b) => {
-            if(sortBy === "Entity") {
-                const aValue = a[sortBy] || '';
-                const bValue = b[sortBy] || '';
-                return sortOrder === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-            }else{ //numerical sorting
-                const aValue = parseFloat(a[sortBy]) || 0;
-                const bValue = parseFloat(b[sortBy]) || 0;
-                return sortOrder === 'asc' ? aValue-bValue : bValue-aValue;
+                return countriesInSelectedContinent && countriesInSelectedContinent.includes(parseInt(countryId));
             }
         });
+        return Object.fromEntries(filteredData);
+        
+    },[dataByCountry, selectedContinent]);
+
+    console.log("section1 filteredDataByContinent", filteredDataByContinent);
+
+    // memorize sorted Data
+    const sortedAndFilteredDataByContinent = useMemo(() => {
+        const sortedArray = Object.entries(filteredDataByContinent).sort((a, b) => {
+                if(sortBy === "Entity") {
+                    const aValue = a[1]["Entity"][sortBy] || ''; // add [1] as the object.enries are the arrats of the form [countryName, countryData]
+                    const bValue = b[1]["Entity"][sortBy] || '';
+                    return sortOrder === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+                }else{ //numerical sorting
+                    const aValue = parseFloat(a[1]["Year Data"][sortBy]) || 0;
+                    const bValue = parseFloat(b[1]["Year Data"][sortBy]) || 0;
+                    return sortOrder === 'asc' ? aValue-bValue : bValue-aValue;
+                }
+            }
+        )
+        return Object.fromEntries(sortedArray);
 
     }, [sortBy, sortOrder, filteredDataByContinent]);
 
-    console.log("section1 sortedData", sortedData);
+    console.log("section1 sortedData", sortedAndFilteredDataByContinent );
     
     //sorting indicator
     const getSortingIcon = (column) => {
@@ -143,13 +157,16 @@ const Section1 = ({id, isActive}) => {
     };
 
     const createTable = (data) => {
-        
+
+        // Convert data object to an array of entries
+        const dataArray = Object.entries(data);
+
         //sort data function
         const sortData = (column) => {
             //deal with the column which is already sorted
             if (sortBy === column){
                 setSortOrder( sortOrder === 'asc' ? 'desc' : 'asc');
-            } else{
+            } else {
                 setSortBy(column);
                 setSortOrder('asc');
             }
@@ -207,11 +224,11 @@ const Section1 = ({id, isActive}) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {data.map((row) => (
-                                <TableRow className="row" key={row.Entity} >
-                                    <TableCell className="cell" sx={{backgroundColor: '#F5F5F5'}}>{row.Entity}</TableCell>
-                                    <TableCell className="cell" >{row[yearRange[0]]}</TableCell>
-                                    <TableCell className="cell" >{row[yearRange[1]]}</TableCell>
+                        {dataArray.map(([countryName, countryData]) => (
+                                <TableRow className="row" key={countryName} >
+                                    <TableCell className="cell" sx={{backgroundColor: '#F5F5F5'}}>{countryData.Entity}</TableCell>
+                                    <TableCell className="cell" >{countryData["Year Data"][yearRange[0]] || 'N/A' }</TableCell>
+                                    <TableCell className="cell" >{countryData["Year Data"][yearRange[1]] || 'N/A' }</TableCell>
                                 </TableRow>
                             )
                             ) 
@@ -274,7 +291,7 @@ const Section1 = ({id, isActive}) => {
                  
                 
             </div>
-            <div className="canvas" id="canvas1">{selectedTabOption==="table" ? createTable(sortedData) : createMap()}</div>
+            <div className="canvas" id="canvas1">{selectedTabOption==="table" ? createTable(sortedAndFilteredDataByContinent) : createMap()}</div>
             <div className="slider-control" id="slider-control1">{selectedTabOption==="table" ? createTableSlider() : createMapSlider()}</div>
             <div className="resource" id="resource">Data source: IHME, Global Burden of Disease (2019)</div>
         </section>

@@ -5,6 +5,7 @@ import section4Dataset from './section4data.csv';
 import ToggleButtonTableMapChart from "../toggleButton/toggleButtonTableMapChart";
 import YearRangeSlider from "../slider/YearRangeSlider";
 import YearSlider from "../slider/YearSlider";
+import WorldMap from "../worldmap/worldmap";
 import { Table, TableHead, TableRow, TableCell, TableBody, Select, MenuItem, FormControl } from '@mui/material';
 import iso3166Lookup from "iso3166-lookup";
 import continentCountryIds from "../worldmap/ContinentCountryId";
@@ -41,13 +42,21 @@ const Section4 = ({id, isActive}) => {
             if(!dataByCountry[country]){
                 dataByCountry[country] = {};
             };
-            if(!dataByCountry[country]["Burden Rate"]){
-                dataByCountry[country]["Burden Rate"] = {};
+            if(!dataByCountry[country]["Year Data"]){
+                dataByCountry[country]["Year Data"] = {};
             };
             
-            dataByCountry[country]["Burden Rate"][year] = row["DALYs (Disability-Adjusted Life Years) - Neoplasms - Sex: Both - Age: Age-standardized (Rate)"];  
+            dataByCountry[country]["Year Data"][year] = row["DALYs (Disability-Adjusted Life Years) - Neoplasms - Sex: Both - Age: Age-standardized (Rate)"];  
             dataByCountry[country]["Code"] = row.Code;
             dataByCountry[country]["Entity"] = row.Entity;
+            
+            if(!dataByCountry[country]["id"]){
+                const countryDetail = iso3166Lookup.findAlpha3(row.Code);
+                if(countryDetail) {
+                dataByCountry[country]["id"] = countryDetail.num3;
+                }
+            };
+            
         });
         return dataByCountry;
     }, [section4Data]);
@@ -184,10 +193,10 @@ const Section4 = ({id, isActive}) => {
                                         {country}
                                     </TableCell>
                                     <TableCell>
-                                        {data[country]["Burden Rate"][yearRange[0]]}
+                                        {data[country]["Year Data"][yearRange[0]]}
                                     </TableCell>
                                     <TableCell>
-                                        {data[country]["Burden Rate"][yearRange[1]]}
+                                        {data[country]["Year Data"][yearRange[1]]}
                                     </TableCell>
                                     
                                 </TableRow>
@@ -236,10 +245,10 @@ const Section4 = ({id, isActive}) => {
                                                 {country}
                                             </TableCell>
                                             <TableCell>
-                                                {data[country]["Burden Rate"][yearRange[0]]}
+                                                {data[country]["Year Data"][yearRange[0]]}
                                             </TableCell>
                                             <TableCell>
-                                                {data[country]["Burden Rate"][yearRange[1]]}
+                                                {data[country]["Year Data"][yearRange[1]]}
                                             </TableCell>
                                             
                                         </TableRow>
@@ -252,6 +261,10 @@ const Section4 = ({id, isActive}) => {
             </div>
 
         );
+    };
+
+    const createMap = () => {
+        return(<WorldMap mapYear={mapYear} dataByCountry={burdenDataByCountry} selectedContinent={selectedContinent}/>);
     };
 
     return(
@@ -289,7 +302,7 @@ const Section4 = ({id, isActive}) => {
                     }
                 </FormControl>
             </div>
-            <div className="canvas" id="canvas4">{selectedTabOption === "table" ? createTable(filteredBurdenDataByCountry) : null}</div>
+            <div className="canvas" id="canvas4">{selectedTabOption === "table" ? createTable(filteredBurdenDataByCountry) : createMap()}</div>
             <div className="slider-control" id="slider-control4">{selectedTabOption !== "map" ? createTableChartSlider() : createMapSlider()}</div>
             <div className="resource" id="resource">Data source: IHME, Global Burden of Disease (2019)</div>
         </section>

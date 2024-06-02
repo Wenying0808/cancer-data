@@ -348,9 +348,6 @@ const Section3 = ({id, isActive}) => {
             .style("font-size", "12px")
             .text( d => parseFloat(countryOrRegionData[d][selectedYear]).toFixed(3) + "%")
 
-        
-
-
     };
 
     return(

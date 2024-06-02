@@ -10,6 +10,8 @@ import { Table, TableHead, TableRow, TableCell, TableBody, Select, MenuItem, For
 import iso3166Lookup from "iso3166-lookup";
 import continentCountryIds from "../worldmap/ContinentCountryId";
 import ReactMultiSelect from "../react-select/ReactMultiSelect";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+
 
 
 const Section4 = ({id, isActive}) => {
@@ -26,7 +28,7 @@ const Section4 = ({id, isActive}) => {
     useEffect(() => {
         d3.csv(section4Dataset).then(function(data, error){
             if(error){
-                console.log("fetch section3data from csv file:", error)
+                console.log("fetch section4data from csv file:", error)
             }else{
                 setSection4Data(data);
             };
@@ -73,7 +75,21 @@ const Section4 = ({id, isActive}) => {
             label: key,
             value: key
         }));
-    }, [burdenDataByCountry])
+    }, [burdenDataByCountry]);
+    console.log("section4 multiSelectOptions",  multiSelectOptions);
+
+    // set default value for selectedMultipleOptions
+    useEffect(() => {
+        const defaultOptions = [
+                multiSelectOptions.find(option => option.value === "African Region (WHO)"),
+                multiSelectOptions.find(option => option.value === "Eastern Mediterranean Region (WHO)"),
+                multiSelectOptions.find(option => option.value === "European Region (WHO)"),
+                multiSelectOptions.find(option => option.value === "Region of the Americas (WHO)"),
+                multiSelectOptions.find(option => option.value === "Western Pacific Region (WHO)"),
+        ].filter(Boolean); // filter out undefined values
+        setSelectedMultiOptions(defaultOptions);
+    }, [multiSelectOptions]);
+    console.log("section4  selectedMultiOptions",  selectedMultiOptions);
 
     // filter datByCountry by selectedContinent for table and map
     const filteredBurdenDataByCountry = useMemo(() => {
@@ -92,7 +108,44 @@ const Section4 = ({id, isActive}) => {
         return Object.fromEntries(filteredData);
 
     }, [burdenDataByCountry, selectedContinent]);
+
     console.log("section4 filteredBurdenDataByCountry", filteredBurdenDataByCountry);
+
+    // filter datByCountry by selectedMultipleOptions for chart
+    const filteredBurdenDataByCountryForChart = useMemo(() => {
+        const selectedCountries = selectedMultiOptions.map(option => option?.value);
+
+        // convert object to key-value pair array, the first array is country, and the second array is its data
+
+        const filteredData = Object.entries(burdenDataByCountry).filter(([country, data]) => {
+            return selectedCountries.includes(country);
+        });
+        return Object.fromEntries(filteredData);
+
+    }, [burdenDataByCountry, selectedMultiOptions]);
+
+    console.log("section4 filteredBurdenDataByCountryForChart", filteredBurdenDataByCountryForChart);
+   
+    //transform data which is suitable for rechart
+    const transformedDataForChart = useMemo(() => {
+        // Handle case where filtered data is empty
+        if (Object.keys(filteredBurdenDataByCountryForChart).length === 0) return [];
+
+        const firstCountry = Object.keys(filteredBurdenDataByCountryForChart)[0];
+        const years = Object.keys(filteredBurdenDataByCountryForChart[firstCountry]["Year Data"]);
+        const result = years.map(year => {
+            const yearData = { year };
+            Object.keys(filteredBurdenDataByCountryForChart).forEach(country => {
+                yearData[country] = parseFloat(filteredBurdenDataByCountryForChart[country]["Year Data"][year])
+            });
+            return yearData;
+        });
+        return result;
+
+    }, [filteredBurdenDataByCountryForChart]);
+
+    console.log("section4 transformedDataForChart", transformedDataForChart);
+   
 
     const handleTabOptionChange = (event, newTabOption) => {
         if(newTabOption !== selectedTabOption){
@@ -282,9 +335,26 @@ const Section4 = ({id, isActive}) => {
         return(<WorldMap mapYear={mapYear} dataByCountry={burdenDataByCountry} selectedContinent={selectedContinent}/>);
     };
 
-    const createChart = () => {
-
+    const createChart = (data) => {
+        
+        const selectedCountries = selectedMultiOptions.map(option => option?.value);
+        return(
+            <ResponsiveContainer width={900} height={400}>
+                <LineChart data={data}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="year" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    {selectedCountries.map(country => (
+                        <Line key={country} type="monotone" dataKey={country} stroke="#8884d8" activeDot={{ r: 8 }} />
+                    ))}
+                </LineChart>
+         </ResponsiveContainer>
+        );
+        
     };
+
 
     return(
         <section id={id} className={`section ${isActive ? "active" : ""}`}>
@@ -320,7 +390,7 @@ const Section4 = ({id, isActive}) => {
                                     </Select>
                             ) 
                             : (
-                                <ReactMultiSelect defaultValue={[multiSelectOptions[1], multiSelectOptions[54],multiSelectOptions[66]]} options={multiSelectOptions} onChange={handleMultiSelectChange}></ReactMultiSelect>
+                                <ReactMultiSelect value={selectedMultiOptions} options={multiSelectOptions} onChange={handleMultiSelectChange}/>
                             )
                     }
                 </FormControl>
@@ -328,7 +398,7 @@ const Section4 = ({id, isActive}) => {
             <div className="canvas" id="canvas4">
                 {selectedTabOption === "table" ? createTable(filteredBurdenDataByCountry) 
                     : selectedTabOption === "map" ?  createMap()
-                        : createChart()
+                        : createChart(transformedDataForChart)
                 }
             </div>
             <div className="slider-control" id="slider-control4">{selectedTabOption !== "map" ? createTableChartSlider() : createMapSlider()}</div>

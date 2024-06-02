@@ -7,6 +7,7 @@ import YearRangeSlider from "../slider/YearRangeSlider";
 import { Table, TableHead, TableRow, TableCell, TableBody, Select, MenuItem, FormControl } from '@mui/material';
 import iso3166Lookup from "iso3166-lookup";
 import continentCountryIds from "../worldmap/ContinentCountryId";
+import CustomColorPalette from "../color/colorPalette";
 
 const Section2 = ({id, isActive}) => {
 
@@ -350,36 +351,11 @@ const Section2 = ({id, isActive}) => {
         const line = d3.line()
                         .x(d => xAxis(d.year))
                         .y(d => yAxis(d.value))
-        
-        //color platte
-        const customColorPalette = [
-            "#DD8585",  
-            "#E24A4A",  
-            "#C2042A",  
-            "#72080E",  
-            "#EE82EE",  
-            "#C617C6",  
-            "#FFA500",  
-            "#FC7E00",  
-            "#DB5D16",  
-            "#8C776C",  
-            "#6F3307",  
-            "#0EC66E", 
-            "#3FA422",  
-            "#046304",
-            "#7A94E7",  
-            "#05B0FC", 
-            "#2C5DDD", 
-            "#00208F",  
-            "#735BD2",  
-            "#561AB8",  
-            "#5D0089",  
-        ];
 
         //define color for each line
         const color = d3.scaleOrdinal()
                         .domain(cancerTypes)
-                        .range(customColorPalette)
+                        .range(CustomColorPalette)
         
         //add vertical lines for each tick on x axis, depending on the selected year range
         const allYearsFromYearRange = d3.range(yearRange[0], yearRange[1]+1); 

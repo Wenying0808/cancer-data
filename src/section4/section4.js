@@ -11,6 +11,7 @@ import iso3166Lookup from "iso3166-lookup";
 import continentCountryIds from "../worldmap/ContinentCountryId";
 import ReactMultiSelect from "../react-select/ReactMultiSelect";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import CustomColorPalette from "../color/colorPalette";
 
 
 
@@ -133,7 +134,10 @@ const Section4 = ({id, isActive}) => {
 
         const firstCountry = Object.keys(filteredBurdenDataByCountryForChart)[0];
         const years = Object.keys(filteredBurdenDataByCountryForChart[firstCountry]["Year Data"]);
-        const result = years.map(year => {
+
+        //filter data based on the selected yearRange
+        const filteredYears =years.filter(year => year >= yearRange[0] && year <= yearRange[1]);
+        const result = filteredYears.map(year => {
             const yearData = { year };
             Object.keys(filteredBurdenDataByCountryForChart).forEach(country => {
                 yearData[country] = parseFloat(filteredBurdenDataByCountryForChart[country]["Year Data"][year])
@@ -142,7 +146,7 @@ const Section4 = ({id, isActive}) => {
         });
         return result;
 
-    }, [filteredBurdenDataByCountryForChart]);
+    }, [filteredBurdenDataByCountryForChart, yearRange]);
 
     console.log("section4 transformedDataForChart", transformedDataForChart);
    
@@ -345,14 +349,19 @@ const Section4 = ({id, isActive}) => {
                     <XAxis dataKey="year" />
                     <YAxis />
                     <Tooltip />
-                    <Legend />
-                    {selectedCountries.map(country => (
-                        <Line key={country} type="monotone" dataKey={country} stroke="#8884d8" activeDot={{ r: 8 }} />
+                    <Legend  layout="horizontal" />
+                    {selectedCountries.map((country, index) => (
+                        <Line 
+                            key={country} 
+                            type="monotone" 
+                            dataKey={country} 
+                            stroke={CustomColorPalette[index % CustomColorPalette.length]} 
+                            activeDot={{ r: 8 }} 
+                        />
                     ))}
                 </LineChart>
          </ResponsiveContainer>
-        );
-        
+        );   
     };
 
 

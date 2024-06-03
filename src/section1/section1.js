@@ -101,8 +101,8 @@ const Section1 = ({id, isActive}) => {
     const sortedAndFilteredDataByContinent = useMemo(() => {
         const sortedArray = Object.entries(filteredDataByContinent).sort((a, b) => {
                 if(sortBy === "Entity") {
-                    const aValue = a[1]["Entity"][sortBy] || ''; // add [1] as the object.enries are the arrats of the form [countryName, countryData]
-                    const bValue = b[1]["Entity"][sortBy] || '';
+                    const aValue = a[1]["Entity"] || ''; // add [1] as the object.enries are the array of such form [countryName, countryData]
+                    const bValue = b[1]["Entity"] || '';
                     return sortOrder === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
                 }else{ //numerical sorting
                     const aValue = parseFloat(a[1]["Year Data"][sortBy]) || 0;

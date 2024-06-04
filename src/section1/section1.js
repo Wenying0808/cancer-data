@@ -8,7 +8,7 @@ import section1Dataset from './section1data.csv';
 import ToggleButtonTableMap from "../toggleButton/toggleButtonTableMap";
 import YearRangeSlider from "../slider/YearRangeSlider";
 import YearSlider from "../slider/YearSlider";
-import { Table, TableHead, TableRow, TableCell, TableBody, Select, MenuItem, FormControl } from '@mui/material';
+import { Table, TableHead, TableRow, TableCell, TableBody, TableSortLabel, Select, MenuItem, FormControl } from '@mui/material';
 import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
@@ -116,13 +116,12 @@ const Section1 = ({id, isActive}) => {
     }, [sortBy, sortOrder, filteredDataByContinent]);
 
     console.log("section1 sortedAndFilteredDataByContinent", sortedAndFilteredDataByContinent );
-    
-    //sorting indicator
-    const getSortingIcon = (column) => {
-        if (column === sortBy) {
-            return sortOrder === 'asc' ? <SouthIcon fontSize="small"/> : <NorthIcon fontSize="small"/>
-        }
-    }
+
+    const handleSortRequest = (column) => {
+        const isAsc = sortBy === column && sortOrder === 'asc';
+        setSortOrder(isAsc ? 'desc' : 'asc')
+        setSortBy(column);
+    };
 
     //handle hover event on the columns header
     const handleColumnHover = (column) => {
@@ -157,17 +156,6 @@ const Section1 = ({id, isActive}) => {
     };
 
     const createTable = (data) => {
-
-        //sort data function
-        const sortData = (column) => {
-            //deal with the column which is already sorted
-            if (sortBy === column){
-                setSortOrder( sortOrder === 'asc' ? 'desc' : 'asc');
-            } else {
-                setSortBy(column);
-                setSortOrder('asc');
-            }
-        };
         
         return(
             <div style={{ maxHeight: "400px", overflowY: "auto" }}>
@@ -176,7 +164,7 @@ const Section1 = ({id, isActive}) => {
                         <TableRow className="columnheader-row" >
                             <TableCell 
                                 className="columnheader-cell"
-                                onClick={() => sortData("Entity")}
+                                onClick={() => handleSortRequest("Entity")}
                                 onMouseEnter={() => handleColumnHover("Entity")}
                                 onMouseLeave={handleColumnLeave}
                                 sx={{
@@ -184,14 +172,18 @@ const Section1 = ({id, isActive}) => {
                                     fontWeight: 600,
                                 }}
                             >
-                                Country / Area
-                                {getSortingIcon("Entity")}
-                                {hoveredColumn === "Entity" && <SwapVertIcon fontSize="small" sx={{color: "gray"}}/>}
+                                <TableSortLabel
+                                    active = {sortBy === "Entity"}
+                                    direction={sortBy === "Entity" ? sortOrder: 'asc'}
+                                >
+                                    Country / Area
+                                </TableSortLabel>
+
                             </TableCell>
 
                             <TableCell 
                                 className="columnheader-cell"
-                                onClick={() => sortData(yearRange[0])}
+                                onClick={() => handleSortRequest(yearRange[0])}
                                 onMouseEnter={() => handleColumnHover(yearRange[0])}
                                 onMouseLeave={handleColumnLeave}
                                 sx={{
@@ -199,14 +191,17 @@ const Section1 = ({id, isActive}) => {
                                     fontWeight: 600,
                                 }}
                             >
-                                {`${yearRange[0]} (%)`}
-                                {getSortingIcon(yearRange[0])}
-                                {hoveredColumn === yearRange[0] && <SwapVertIcon fontSize="small" sx={{color: "gray"}}/>}
+                                <TableSortLabel
+                                    active = {sortBy === yearRange[0]}
+                                    direction={sortBy === yearRange[0] ? sortOrder: 'asc'}
+                                >
+                                    {`${yearRange[0]} (%)`}
+                                </TableSortLabel>
                             </TableCell>
 
                             <TableCell 
                                 className="columnheader-cell"
-                                onClick={() => sortData(yearRange[1])}
+                                onClick={() => handleSortRequest(yearRange[1])}
                                 onMouseEnter={() => handleColumnHover(yearRange[1])}
                                 onMouseLeave={handleColumnLeave}
                                 sx={{
@@ -214,9 +209,12 @@ const Section1 = ({id, isActive}) => {
                                     fontWeight: 600,
                                 }}
                             >
-                                {`${yearRange[1]} (%)`}
-                                {getSortingIcon(yearRange[1])}
-                                {hoveredColumn === yearRange[1] && <SwapVertIcon fontSize="small" sx={{color: "gray"}}/>}
+                                <TableSortLabel
+                                    active = {sortBy === yearRange[1]}
+                                    direction={sortBy === yearRange[1] ? sortOrder: 'asc'}
+                                >
+                                    {`${yearRange[1]} (%)`}
+                                </TableSortLabel>
                             </TableCell>
                         </TableRow>
                     </TableHead>

@@ -4,7 +4,7 @@ import * as d3 from "d3";
 import section3Dataset from './section3data.csv';
 import ToggleButtonTableChart from "../toggleButton/toggleButtonTableChart";
 import YearSlider from "../slider/YearSlider";
-import { Table, TableHead, TableRow, TableCell, TableBody, Select, MenuItem, FormControl } from '@mui/material';
+import { Table, TableHead, TableRow, TableCell, TableBody, TableSortLabel, Select, MenuItem, FormControl } from '@mui/material';
 import iso3166Lookup from "iso3166-lookup";
 import continentCountryIds from "../worldmap/ContinentCountryId";
 
@@ -13,8 +13,11 @@ const Section3 = ({id, isActive}) => {
     const [section3Data, setSection3Data] = useState([]);
     const [selectedTabOption, setSelectedTabOption] = useState("table");
     const [selectedYear, setSelectedYear] = useState(2019);
-    const[selectedContinent, setSelectedContinent] = useState("World");
-    const[selectedCountryOrRegion, setSelectedCountryOrRegion] = useState("European Region (WHO)")
+    const [selectedContinent, setSelectedContinent] = useState("World");
+    const [selectedCountryOrRegion, setSelectedCountryOrRegion] = useState("European Region (WHO)");
+    const [sortBy, setSortBy] = useState("Entity");
+    const [sortOrder, setSortOrder] = useState("asc");
+    const [hoveredColumn, setHoveredColumn] = useState(null);
 
     //fetch csv data
     useEffect(() => {
@@ -53,6 +56,7 @@ const Section3 = ({id, isActive}) => {
             };
 
             dataByCountry[country]["Code"]=row.Code;
+            dataByCountry[country]["Entity"]=row.Entity;
 
             ageGroups.forEach(ageGroup => {
                 if(!dataByCountry[country][ageGroup]){
@@ -89,7 +93,43 @@ const Section3 = ({id, isActive}) => {
         return Object.fromEntries(filteredData);
         
     }, [ageGroupDataByCountry, selectedContinent]);
-    console.log("filteredAgeGroupDataByCountry in section2", filteredAgeGroupDataByCountry);
+    console.log("filteredAgeGroupDataByCountry in section3", filteredAgeGroupDataByCountry);
+
+    console.log("Object.entries(filteredAgeGroupDataByCountry) in section3", Object.entries(filteredAgeGroupDataByCountry));
+
+    // memorize sorted Data
+    const sortedAndFilteredDataByCountry = useMemo(() => {
+       const sortedArray = Object.entries(filteredAgeGroupDataByCountry).sort((a,b) => {
+            if(sortBy === "Entity"){
+                const aValue = a[1]["Entity"] || ''; // add [1] as the object.enries are the array of such form [countryName, countryData]
+                    const bValue = b[1]["Entity"] || '';
+                    return sortOrder === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+            } else {
+                // numerical sorting -> Get the age group and year from the sortBy variable
+                const [ageGroup, year] = sortBy.split('|');
+                const aValue = parseFloat(a[1][ageGroup][year]) || 0;
+                const bValue = parseFloat(b[1][ageGroup][year]) || 0;
+                return sortOrder === 'asc' ? aValue-bValue : bValue-aValue;
+            }
+        });
+        return Object.fromEntries(sortedArray);
+    }, [sortBy, sortOrder, filteredAgeGroupDataByCountry]);
+
+    const handleSortRequest = (column) => {
+        const isAsc = sortBy === column && sortOrder === 'asc';
+        setSortOrder(isAsc ? 'desc' : 'asc');
+        setSortBy(column);
+    };
+
+    // handle hover event on the columns header
+    const handleColumnHover = (column) => {
+        if(column !== sortBy){
+            setHoveredColumn(column);
+        }
+    };
+    const handleColumnLeave = () => {
+        setHoveredColumn(null);
+    };
 
     const handleTabOptionChange = (event, newTabOption) => {
         if(newTabOption !== selectedTabOption){
@@ -127,10 +167,13 @@ const Section3 = ({id, isActive}) => {
                     {/*table header: country, age group */}
                     <TableHead>
                         <TableRow>
-                            <TableCell 
+                            <TableCell
+                                onClick={() => handleSortRequest("Entity")}
+                                onMouseEnter={() => handleColumnHover("Entity")}
+                                onMouseLeave={handleColumnLeave}
                                 sx={{
                                     minWidth: '150px',
-                                    backgroundColor: '#FBFBFB',
+                                    backgroundColor: hoveredColumn === "Entity" ? '#EDEDED' : '#FBFBFB',
                                     position: 'sticky',
                                     top: 0,
                                     zIndex: 2,
@@ -138,14 +181,23 @@ const Section3 = ({id, isActive}) => {
                                     fontWeight: 600
                                 }}
                             >
-                                Country / Region
+                                <TableSortLabel
+                                    active={sortBy === "Entity"}
+                                    direction={sortBy === "Entity" ? sortOrder: 'asc'}
+                                >
+                                    Country / Region
+                                </TableSortLabel>
+                                
                             </TableCell>
                             {ageGroups.map((ageGroup) => (
                                 <TableCell 
-                                    key={ageGroup} 
+                                    key={ageGroup}
+                                    onClick={() => handleSortRequest(`${ageGroup}|${selectedYear}`)}
+                                    onMouseEnter={() => handleColumnHover(`${ageGroup}|${selectedYear}`)}
+                                    onMouseLeave={handleColumnLeave}
                                     sx={{ 
                                         minWidth: '150px',
-                                        backgroundColor: '#FBFBFB',
+                                        backgroundColor: hoveredColumn === `${ageGroup}|${selectedYear}` ? '#EDEDED' : '#FBFBFB',
                                         position: 'sticky',
                                         top: 0,
                                         left: 182,
@@ -154,7 +206,12 @@ const Section3 = ({id, isActive}) => {
                                     }} 
                                     align='left'
                                 >
-                                    {ageGroup}
+                                    <TableSortLabel
+                                        active={sortBy === `${ageGroup}|${selectedYear}`}
+                                        direction={sortBy === `${ageGroup}|${selectedYear}` ? sortOrder : 'asc'}
+                                    >
+                                        {`${ageGroup} (%)`}
+                                    </TableSortLabel>
                                 </TableCell>
                             ))}
                         </TableRow>
@@ -240,6 +297,7 @@ const Section3 = ({id, isActive}) => {
             </div>
         );
     };
+
     const createChart = () => {
 
         // get maxValue for the filtered data, depending on the selectedYear and selectedCountryOrRegion
@@ -381,7 +439,7 @@ const Section3 = ({id, isActive}) => {
                     }
                 </FormControl>
             </div>
-            <div className="canvas" id="canvas3">{selectedTabOption==="table" ? createTable(filteredAgeGroupDataByCountry) : createChart()}</div>
+            <div className="canvas" id="canvas3">{selectedTabOption==="table" ? createTable(sortedAndFilteredDataByCountry) : createChart()}</div>
             <div className="slider-control" id="slider-control3">{createSlider()}</div>
             <div className="resource" id="resource">Data source: IHME, Global Burden of Disease (2019)</div>
         </section>

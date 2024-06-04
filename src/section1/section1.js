@@ -3,15 +3,11 @@ import * as d3 from "d3";
 import * as topojson from 'topojson-client';
 import iso3166Lookup from "iso3166-lookup";
 import "../section/section.css";
-import "./section1_table.css";
 import section1Dataset from './section1data.csv';
 import ToggleButtonTableMap from "../toggleButton/toggleButtonTableMap";
 import YearRangeSlider from "../slider/YearRangeSlider";
 import YearSlider from "../slider/YearSlider";
 import { Table, TableHead, TableRow, TableCell, TableBody, TableSortLabel, Select, MenuItem, FormControl } from '@mui/material';
-import NorthIcon from '@mui/icons-material/North';
-import SouthIcon from '@mui/icons-material/South';
-import SwapVertIcon from '@mui/icons-material/SwapVert';
 import WorldMap from "../worldmap/worldmap";
 import continentCountryIds from "../worldmap/ContinentCountryId";
     
@@ -104,7 +100,8 @@ const Section1 = ({id, isActive}) => {
                     const aValue = a[1]["Entity"] || ''; // add [1] as the object.enries are the array of such form [countryName, countryData]
                     const bValue = b[1]["Entity"] || '';
                     return sortOrder === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-                }else{ //numerical sorting
+                }else{ 
+                    //numerical sorting
                     const aValue = parseFloat(a[1]["Year Data"][sortBy]) || 0;
                     const bValue = parseFloat(b[1]["Year Data"][sortBy]) || 0;
                     return sortOrder === 'asc' ? aValue-bValue : bValue-aValue;
@@ -119,7 +116,7 @@ const Section1 = ({id, isActive}) => {
 
     const handleSortRequest = (column) => {
         const isAsc = sortBy === column && sortOrder === 'asc';
-        setSortOrder(isAsc ? 'desc' : 'asc')
+        setSortOrder(isAsc ? 'desc' : 'asc');
         setSortBy(column);
     };
 
@@ -128,10 +125,10 @@ const Section1 = ({id, isActive}) => {
         if(column !== sortBy){
             setHoveredColumn(column);
         }
-    }
-    const handleColumnLeave = (column) => {
+    };
+    const handleColumnLeave = () => {
         setHoveredColumn(null);
-    }
+    };
 
     //set the range of the year
     const minRangeDistance = 1;
@@ -163,17 +160,16 @@ const Section1 = ({id, isActive}) => {
                     <TableHead>
                         <TableRow className="columnheader-row" >
                             <TableCell 
-                                className="columnheader-cell"
                                 onClick={() => handleSortRequest("Entity")}
                                 onMouseEnter={() => handleColumnHover("Entity")}
                                 onMouseLeave={handleColumnLeave}
                                 sx={{
-                                    backgroundColor:'#FBFBFB',
+                                    backgroundColor: hoveredColumn === "Entity" ? '#EDEDED' : '#FBFBFB',
                                     fontWeight: 600,
                                 }}
                             >
                                 <TableSortLabel
-                                    active = {sortBy === "Entity"}
+                                    active={sortBy === "Entity"}
                                     direction={sortBy === "Entity" ? sortOrder: 'asc'}
                                 >
                                     Country / Area
@@ -182,36 +178,34 @@ const Section1 = ({id, isActive}) => {
                             </TableCell>
 
                             <TableCell 
-                                className="columnheader-cell"
                                 onClick={() => handleSortRequest(yearRange[0])}
                                 onMouseEnter={() => handleColumnHover(yearRange[0])}
                                 onMouseLeave={handleColumnLeave}
                                 sx={{
-                                    backgroundColor:'#FBFBFB',
+                                    backgroundColor: hoveredColumn === `${yearRange[0]}` ? '#EDEDED' : '#FBFBFB',
                                     fontWeight: 600,
                                 }}
                             >
                                 <TableSortLabel
                                     active = {sortBy === yearRange[0]}
-                                    direction={sortBy === yearRange[0] ? sortOrder: 'asc'}
+                                    direction = {sortBy === yearRange[0] ? sortOrder: 'asc'}
                                 >
                                     {`${yearRange[0]} (%)`}
                                 </TableSortLabel>
                             </TableCell>
 
                             <TableCell 
-                                className="columnheader-cell"
                                 onClick={() => handleSortRequest(yearRange[1])}
                                 onMouseEnter={() => handleColumnHover(yearRange[1])}
                                 onMouseLeave={handleColumnLeave}
                                 sx={{
-                                    backgroundColor:'#FBFBFB',
+                                    backgroundColor: hoveredColumn === `${yearRange[1]}` ? '#EDEDED' : '#FBFBFB',
                                     fontWeight: 600,
                                 }}
                             >
                                 <TableSortLabel
                                     active = {sortBy === yearRange[1]}
-                                    direction={sortBy === yearRange[1] ? sortOrder: 'asc'}
+                                    direction = {sortBy === yearRange[1] ? sortOrder: 'asc'}
                                 >
                                     {`${yearRange[1]} (%)`}
                                 </TableSortLabel>

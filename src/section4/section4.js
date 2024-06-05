@@ -12,7 +12,8 @@ import continentCountryIds from "../worldmap/ContinentCountryId";
 import ReactMultiSelect from "../react-select/ReactMultiSelect";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import CustomColorPalette from "../color/colorPalette";
-import CustomLegend from "./legend";
+import CustomLegend from "./CustomLegend";
+import CustomTooltip from "./CustomTooltip";
 
 
 
@@ -415,7 +416,7 @@ const Section4 = ({id, isActive}) => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="year" />
                     <YAxis />
-                    <Tooltip />
+                    <Tooltip content={<CustomTooltip />}/>
                     <Legend content={<CustomLegend />} />
                     {selectedCountries.map((country, index) => (
                         <Line 

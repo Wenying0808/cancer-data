@@ -6,7 +6,7 @@ import ToggleButtonTableMapChart from "../toggleButton/toggleButtonTableMapChart
 import YearRangeSlider from "../slider/YearRangeSlider";
 import YearSlider from "../slider/YearSlider";
 import WorldMap from "../worldmap/worldmap";
-import { Table, TableHead, TableRow, TableCell, TableBody, Select, MenuItem, FormControl } from '@mui/material';
+import { Table, TableHead, TableRow, TableCell, TableBody, TableSortLabel, Select, MenuItem, FormControl } from '@mui/material';
 import iso3166Lookup from "iso3166-lookup";
 import continentCountryIds from "../worldmap/ContinentCountryId";
 import ReactMultiSelect from "../react-select/ReactMultiSelect";
@@ -23,6 +23,9 @@ const Section4 = ({id, isActive}) => {
     const[selectedContinent, setSelectedContinent] = useState("World");
     const[selectedCountryOrRegion, setSelectedCountryOrRegion] = useState("European Region (WHO)");
     const [selectedMultiOptions, setSelectedMultiOptions] = useState([]);
+    const [sortBy, setSortBy] = useState("Entity");
+    const [sortOrder, setSortOrder] = useState("asc");
+    const [hoveredColumn, setHoveredColumn] = useState(null);
 
 
     // fetch data from csv
@@ -112,6 +115,26 @@ const Section4 = ({id, isActive}) => {
 
     console.log("section4 filteredBurdenDataByCountry", filteredBurdenDataByCountry);
 
+    // sort filteredBurdenDataByCountry for table
+    const sortedFilteredBurdenDataByCountry = useMemo(() => {
+
+        const sortedArray = Object.entries(filteredBurdenDataByCountry).sort((a, b) => {
+            if(sortBy === "Entity") {
+                const aValue = a[1]["Entity"] || ''; // add [1] as the object.enries are the array of such form [countryName, countryData]
+                const bValue = b[1]["Entity"] || '';
+                return sortOrder === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+            }else{ 
+                //numerical sorting
+                const aValue = parseFloat(a[1]["Year Data"][sortBy]) || 0;
+                const bValue = parseFloat(b[1]["Year Data"][sortBy]) || 0;
+                return sortOrder === 'asc' ? aValue-bValue : bValue-aValue;
+            }
+        });
+        return Object.fromEntries(sortedArray);
+
+    }, [sortBy, sortOrder, filteredBurdenDataByCountry]);
+    console.log("section4 sortedFilteredBurdenDataByCountry for table", sortedFilteredBurdenDataByCountry);
+
     // filter datByCountry by selectedMultipleOptions for chart
     const filteredBurdenDataByCountryForChart = useMemo(() => {
         const selectedCountries = selectedMultiOptions.map(option => option?.value);
@@ -199,6 +222,21 @@ const Section4 = ({id, isActive}) => {
         return (<YearSlider year={mapYear} handleYearChange={handleMapYearChange}/>);
     };
 
+    const handleSortRequest = (column) => {
+        const isAsc = sortBy === column && sortOrder === 'asc';
+        setSortOrder(isAsc ? 'desc' : 'asc');
+        setSortBy(column);
+    };
+
+    const handleColumnHover = (column) => {
+        if(column !== sortBy){
+            setHoveredColumn(column);
+        }
+    };
+    const handleColumnLeave = () => {
+        setHoveredColumn(null);
+    };
+
     const createTable = (data) => {
         return(
             <div style={{ maxHeight: "440px", overflowY: "auto" }}>
@@ -206,48 +244,76 @@ const Section4 = ({id, isActive}) => {
                     {/*table header: country, cancer type, table subheader: year 1 and year 2 */}
                     <TableHead>
                         <TableRow>
-                            <TableCell 
+                            <TableCell
+                                onClick={() => handleSortRequest("Entity")}
+                                onMouseEnter={() => handleColumnHover("Entity")}
+                                onMouseLeave={handleColumnLeave}
                                 sx={{
                                     minWidth: '150px',
-                                    backgroundColor: '#FBFBFB',
+                                    backgroundColor: hoveredColumn === "Entity" ? '#EDEDED' : '#FBFBFB',
                                     position: 'sticky',
                                     top: 0,
                                     zIndex: 1,
                                     left: 0,
-                                    fontWeight: 600
+                                    fontWeight: 600,
+                                    cursor: "pointer",
                                 }}
                             >
-                                Country / Region
+                                <TableSortLabel
+                                    active={sortBy === "Entity"}
+                                    direction={sortBy === "Entity" ? sortOrder: 'asc'}
+                                >
+                                    Country / Region
+                                </TableSortLabel>
+                                
                             </TableCell>
                             
-                            <TableCell 
+                            <TableCell
+                                onClick={() => handleSortRequest(yearRange[0])}
+                                onMouseEnter={() => handleColumnHover(yearRange[0])}
+                                onMouseLeave={handleColumnLeave}
                                 sx={{ 
                                     minWidth: '150px',
-                                    backgroundColor: '#FBFBFB',
+                                    backgroundColor: hoveredColumn === `${yearRange[0]}` ? '#EDEDED' : '#FBFBFB',
                                     position: 'sticky',
                                     top: 0,
                                     left: 150,
                                     zIndex: 1,
                                     fontWeight:600,
+                                    cursor: "pointer",
                                 }} 
                                 align='left'
                             >
-                                {`${yearRange[0]}`}
+                                <TableSortLabel
+                                    active={sortBy === yearRange[0]}
+                                    direction={sortBy === yearRange[0] ? sortOrder: 'asc'}
+                                >
+                                    {`${yearRange[0]}`}
+                                </TableSortLabel>
                             </TableCell>
 
-                            <TableCell 
+                            <TableCell
+                                onClick={() => handleSortRequest(yearRange[1])}
+                                onMouseEnter={() => handleColumnHover(yearRange[1])}
+                                onMouseLeave={handleColumnLeave}
                                 sx={{ 
                                     minWidth: '150px',
-                                    backgroundColor: '#FBFBFB',
+                                    backgroundColor: hoveredColumn === `${yearRange[1]}` ? '#EDEDED' : '#FBFBFB',
                                     position: 'sticky',
                                     top: 0,
                                     left: 150,
                                     zIndex: 1,
                                     fontWeight: 600,
+                                    cursor: "pointer",
                                 }} 
                                 align='left'
                             >
-                                {`${yearRange[1]}`}
+                                <TableSortLabel
+                                    active={sortBy === yearRange[1]}
+                                    direction={sortBy === yearRange[1] ? sortOrder: 'asc'}
+                                >
+                                    {`${yearRange[1]}`}
+                                </TableSortLabel>
                             </TableCell>
 
                         </TableRow>
@@ -405,7 +471,7 @@ const Section4 = ({id, isActive}) => {
                 </FormControl>
             </div>
             <div className="canvas" id="canvas4">
-                {selectedTabOption === "table" ? createTable(filteredBurdenDataByCountry) 
+                {selectedTabOption === "table" ? createTable(sortedFilteredBurdenDataByCountry) 
                     : selectedTabOption === "map" ?  createMap()
                         : createChart(transformedDataForChart)
                 }

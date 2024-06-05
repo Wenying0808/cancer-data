@@ -158,7 +158,7 @@ const Section1 = ({id, isActive}) => {
             <div style={{ maxHeight: "400px", overflowY: "auto" }}>
                 <Table stickyHeader>
                     <TableHead>
-                        <TableRow className="columnheader-row" >
+                        <TableRow>
                             <TableCell 
                                 onClick={() => handleSortRequest("Entity")}
                                 onMouseEnter={() => handleColumnHover("Entity")}
@@ -166,6 +166,7 @@ const Section1 = ({id, isActive}) => {
                                 sx={{
                                     backgroundColor: hoveredColumn === "Entity" ? '#EDEDED' : '#FBFBFB',
                                     fontWeight: 600,
+                                    cursor: "pointer",
                                 }}
                             >
                                 <TableSortLabel
@@ -184,11 +185,12 @@ const Section1 = ({id, isActive}) => {
                                 sx={{
                                     backgroundColor: hoveredColumn === `${yearRange[0]}` ? '#EDEDED' : '#FBFBFB',
                                     fontWeight: 600,
+                                    cursor: "pointer",
                                 }}
                             >
                                 <TableSortLabel
-                                    active = {sortBy === yearRange[0]}
-                                    direction = {sortBy === yearRange[0] ? sortOrder: 'asc'}
+                                    active={sortBy === yearRange[0]}
+                                    direction={sortBy === yearRange[0] ? sortOrder: 'asc'}
                                 >
                                     {`${yearRange[0]} (%)`}
                                 </TableSortLabel>
@@ -201,11 +203,12 @@ const Section1 = ({id, isActive}) => {
                                 sx={{
                                     backgroundColor: hoveredColumn === `${yearRange[1]}` ? '#EDEDED' : '#FBFBFB',
                                     fontWeight: 600,
+                                    cursor: "pointer",
                                 }}
                             >
                                 <TableSortLabel
-                                    active = {sortBy === yearRange[1]}
-                                    direction = {sortBy === yearRange[1] ? sortOrder: 'asc'}
+                                    active={sortBy === yearRange[1]}
+                                    direction={sortBy === yearRange[1] ? sortOrder: 'asc'}
                                 >
                                     {`${yearRange[1]} (%)`}
                                 </TableSortLabel>

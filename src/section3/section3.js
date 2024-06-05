@@ -172,13 +172,14 @@ const Section3 = ({id, isActive}) => {
                                 onMouseEnter={() => handleColumnHover("Entity")}
                                 onMouseLeave={handleColumnLeave}
                                 sx={{
-                                    minWidth: '150px',
+                                    minWidth: '180px',
                                     backgroundColor: hoveredColumn === "Entity" ? '#EDEDED' : '#FBFBFB',
                                     position: 'sticky',
                                     top: 0,
                                     zIndex: 2,
                                     left: 0,
-                                    fontWeight: 600
+                                    fontWeight: 600,
+                                    cursor: "pointer",
                                 }}
                             >
                                 <TableSortLabel
@@ -196,13 +197,14 @@ const Section3 = ({id, isActive}) => {
                                     onMouseEnter={() => handleColumnHover(`${ageGroup}|${selectedYear}`)}
                                     onMouseLeave={handleColumnLeave}
                                     sx={{ 
-                                        minWidth: '150px',
+                                        minWidth: '180px',
                                         backgroundColor: hoveredColumn === `${ageGroup}|${selectedYear}` ? '#EDEDED' : '#FBFBFB',
                                         position: 'sticky',
                                         top: 0,
                                         left: 182,
                                         zIndex: 2,
                                         fontWeight:600,
+                                        cursor: "pointer",
                                     }} 
                                     align='left'
                                 >

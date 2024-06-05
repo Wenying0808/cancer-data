@@ -5,11 +5,16 @@ const CustomTooltip = ({ active, payload }) => {
   
       return (
         <div className="custom-tooltip" style={{ backgroundColor: '#fff', padding: '16px', borderRadius: '8px', boxShadow: "0px 2px 20px 0px rgba(0, 0, 0, 0.35)" }}>
-          <div style={{marginBottom: '8px'}}>{`Year: ${sortedPayload[0].payload.year}`}</div>
+          <div style={{marginBottom: '8px', fontWeight: '700'}}>
+            {sortedPayload[0].payload.year}
+          </div>
           {sortedPayload.map((entry, index) => (
             <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
               <div style={{ width: '12px', height: '12px', borderRadius: '6px', backgroundColor: entry.color, marginRight: '6px' }}></div>
-              <div>{`${entry.name}: ${entry.value}`}</div>
+              <div style={{ display: 'flex', flexDirection: 'row', gap: '4px'}}>
+                <div>{`${entry.name}:`}</div>
+                <div style={{ fontWeight: '600'}}>{`${entry.value}`}</div>
+              </div>
             </div>
           ))}
         </div>

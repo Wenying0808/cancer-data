@@ -231,10 +231,9 @@ const Section4 = ({id, isActive}) => {
     };
 
     const handleColumnHover = (column) => {
-        if(column !== sortBy){
-            setHoveredColumn(column);
-        }
+        setHoveredColumn(column);
     };
+    
     const handleColumnLeave = () => {
         setHoveredColumn(null);
     };

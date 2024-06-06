@@ -122,9 +122,7 @@ const Section1 = ({id, isActive}) => {
 
     //handle hover event on the columns header
     const handleColumnHover = (column) => {
-        if(column !== sortBy){
-            setHoveredColumn(column);
-        }
+        setHoveredColumn(column);
     };
     const handleColumnLeave = () => {
         setHoveredColumn(null);

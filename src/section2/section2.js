@@ -4,7 +4,7 @@ import section2Dataset from './section2data.csv';
 import "../section/section.css";
 import ToggleButtonTableChart from "../toggleButton/toggleButtonTableChart";
 import YearRangeSlider from "../slider/YearRangeSlider";
-import { Table, TableHead, TableRow, TableCell, TableBody, Select, MenuItem, FormControl } from '@mui/material';
+import { Table, TableHead, TableRow, TableCell, TableBody, TableSortLabel, Select, MenuItem, FormControl } from '@mui/material';
 import iso3166Lookup from "iso3166-lookup";
 import continentCountryIds from "../worldmap/ContinentCountryId";
 import CustomColorPalette from "../color/colorPalette";
@@ -14,8 +14,11 @@ const Section2 = ({id, isActive}) => {
     const[section2Data, setSection2Data] = useState([]);
     const[selectedTabOption, setSelectedTabOption] = useState("table");
     const[selectedContinent, setSelectedContinent] = useState("World");
-    const[selectedCountryOrRegion, setSelectedCountryOrRegion] = useState("European Region (WHO)")
-    const[yearRange, setYearRange] = useState([1990,2019])
+    const[selectedCountryOrRegion, setSelectedCountryOrRegion] = useState("European Region (WHO)");
+    const[yearRange, setYearRange] = useState([1990,2019]);
+    const [sortBy, setSortBy] = useState("Entity");
+    const [sortOrder, setSortOrder] = useState("asc");
+    const [hoveredColumn, setHoveredColumn] = useState(null);
 
     //fetch section 2 data on initail render
     useEffect(() => {
@@ -68,6 +71,7 @@ const Section2 = ({id, isActive}) => {
                 dataByCountry[country]={};
             };
             dataByCountry[country]["Code"]=row.Code;
+            dataByCountry[country]["Entity"]=row.Entity;
             cancerTypes.forEach(cancerType => {
                 //create cancer type object to each country if it doesn't exist
                 if(!dataByCountry[country][cancerType]){
@@ -101,6 +105,26 @@ const Section2 = ({id, isActive}) => {
         return Object.fromEntries(filteredEntries);
     },[typeDataByCountry, selectedContinent]);
     console.log("filteredTypeDataByCountry in Section2:", filteredTypeDataByCountry);
+
+    // sort filtered dat
+    const sortedFilteredTypeDataByCountry = useMemo(() => {
+        const sortedArray = Object.entries(filteredTypeDataByCountry).sort((a, b) => {
+            if(sortBy === "Entity") {
+                const aValue = a[1]["Entity"] || ''; // add [1] as the object.enries are the array of such form [countryName, countryData]
+                const bValue = b[1]["Entity"] || '';
+                return sortOrder === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+            }else{ 
+                //numerical sorting
+                const [cancerType, year] = sortBy.split('|');
+                const aValue = parseFloat(a[1][cancerType][year]) || 0;
+                const bValue = parseFloat(b[1][cancerType][year]) || 0;
+                return sortOrder === 'asc' ? aValue-bValue : bValue-aValue;
+            }
+        });
+        return Object.fromEntries(sortedArray);
+
+    }, [sortBy, sortOrder, filteredTypeDataByCountry]);
+    console.log("section2 sortedFilteredTypeDataByCountry for table", sortedFilteredTypeDataByCountry);
 
     //change the tab option
     const handleTabOptionChange = (event, newOption) => {
@@ -136,6 +160,20 @@ const Section2 = ({id, isActive}) => {
        console.log("Year Range on section2 slider:", newRange);
     };
 
+    const handleSortRequest = (column) => {
+        const isAsc = sortBy === column && sortOrder === 'asc';
+        setSortOrder(isAsc ? 'desc' : 'asc');
+        setSortBy(column);
+    };
+
+    const handleColumnHover = (column) => {
+        setHoveredColumn(column);
+    };
+    
+    const handleColumnLeave = () => {
+        setHoveredColumn(null);
+    };
+
     //create slider for table and chart
     const createSlider = () => {
         return(
@@ -156,18 +194,28 @@ const Section2 = ({id, isActive}) => {
                     <TableHead>
                         <TableRow>
                             <TableCell 
-                                rowSpan={2} 
+                                rowSpan={2}
+                                onClick={() => handleSortRequest("Entity")}
+                                onMouseEnter={() => handleColumnHover("Entity")}
+                                onMouseLeave={handleColumnLeave}
                                 sx={{
                                     minWidth: '150px',
-                                    backgroundColor: '#FBFBFB',
+                                    backgroundColor: hoveredColumn === "Entity" ? '#EDEDED' : '#FBFBFB',
                                     position: 'sticky',
                                     top: 0,
                                     zIndex: 1,
                                     left: 0,
-                                    fontWeight: 600
+                                    fontWeight: 600,
+                                    cursor: "pointer",
                                 }}
                             >
-                                Country / Region
+                                <TableSortLabel
+                                    active={sortBy === "Entity"}
+                                    direction={sortBy === "Entity" ? sortOrder: 'asc'}
+                                >
+                                     Country / Region
+                                </TableSortLabel>
+                                
                             </TableCell>
                             {cancerTypes.map((type) => (
                                 <TableCell 
@@ -193,15 +241,24 @@ const Section2 = ({id, isActive}) => {
                                 yearRange.map((year) => (
                                     <TableCell 
                                         key={`${type}-${year}`}
+                                        onClick={() => handleSortRequest(`${type}|${year}`)}
+                                        onMouseEnter={() => handleColumnHover(`${type}|${year}`)}
+                                        onMouseLeave={handleColumnLeave}
                                         sx={{
-                                            backgroundColor: '#FBFBFB',
+                                            backgroundColor: hoveredColumn === `${type}|${year}` ? '#EDEDED' : '#FBFBFB',
                                             position: 'sticky',
                                             top: 56.5,
                                             left: 182,
                                             zIndex: 1,
+                                            cursor: "pointer",
                                         }} 
                                     >
-                                        {`${year} (%)`}
+                                        <TableSortLabel
+                                            active={sortBy === `${type}|${year}`}
+                                            direction={sortBy === `${type}|${year}` ? sortOrder: 'asc'}
+                                        >
+                                            {`${year} (%)`}
+                                        </TableSortLabel>
                                     </TableCell>
                                 ))
                             ))}
@@ -506,7 +563,7 @@ const Section2 = ({id, isActive}) => {
                     
                 </FormControl>
             </div>
-            <div className="canvas" id="canvas2">{selectedTabOption==="table" ? createTable(filteredTypeDataByCountry) : createChart()}</div>
+            <div className="canvas" id="canvas2">{selectedTabOption==="table" ? createTable(sortedFilteredTypeDataByCountry) : createChart()}</div>
             <div className="slider-control" id="slider-control2">{createSlider()}</div>
             <div className="resource" id="resource">Data source: IHME, Global Burden of Disease (2019)</div>
         </section>

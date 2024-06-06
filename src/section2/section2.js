@@ -164,12 +164,13 @@ const Section2 = ({id, isActive}) => {
         const isAsc = sortBy === column && sortOrder === 'asc';
         setSortOrder(isAsc ? 'desc' : 'asc');
         setSortBy(column);
+        // Force re-render
     };
 
     const handleColumnHover = (column) => {
         setHoveredColumn(column);
     };
-    
+
     const handleColumnLeave = () => {
         setHoveredColumn(null);
     };
@@ -211,7 +212,7 @@ const Section2 = ({id, isActive}) => {
                             >
                                 <TableSortLabel
                                     active={sortBy === "Entity"}
-                                    direction={sortBy === "Entity" ? sortOrder: 'asc'}
+                                    direction={sortBy === "Entity" ? sortOrder : 'asc'}
                                 >
                                      Country / Region
                                 </TableSortLabel>
@@ -255,7 +256,7 @@ const Section2 = ({id, isActive}) => {
                                     >
                                         <TableSortLabel
                                             active={sortBy === `${type}|${year}`}
-                                            direction={sortBy === `${type}|${year}` ? sortOrder: 'asc'}
+                                            direction={sortBy === `${type}|${year}` ? sortOrder : 'asc'}
                                         >
                                             {`${year} (%)`}
                                         </TableSortLabel>

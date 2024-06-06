@@ -125,7 +125,7 @@ const Section3 = ({id, isActive}) => {
     const handleColumnHover = (column) => {
         setHoveredColumn(column);
     };
-    
+
     const handleColumnLeave = () => {
         setHoveredColumn(null);
     };
@@ -183,7 +183,7 @@ const Section3 = ({id, isActive}) => {
                             >
                                 <TableSortLabel
                                     active={sortBy === "Entity"}
-                                    direction={sortBy === "Entity" ? sortOrder: 'asc'}
+                                    direction={sortBy === "Entity" ? sortOrder : 'asc'}
                                 >
                                     Country / Region
                                 </TableSortLabel>

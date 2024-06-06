@@ -169,7 +169,7 @@ const Section1 = ({id, isActive}) => {
                             >
                                 <TableSortLabel
                                     active={sortBy === "Entity"}
-                                    direction={sortBy === "Entity" ? sortOrder: 'asc'}
+                                    direction={sortBy === "Entity" ? sortOrder : 'asc'}
                                 >
                                     Country / Area
                                 </TableSortLabel>
@@ -188,7 +188,7 @@ const Section1 = ({id, isActive}) => {
                             >
                                 <TableSortLabel
                                     active={sortBy === yearRange[0]}
-                                    direction={sortBy === yearRange[0] ? sortOrder: 'asc'}
+                                    direction={sortBy === yearRange[0] ? sortOrder : 'asc'}
                                 >
                                     {`${yearRange[0]} (%)`}
                                 </TableSortLabel>
@@ -206,7 +206,7 @@ const Section1 = ({id, isActive}) => {
                             >
                                 <TableSortLabel
                                     active={sortBy === yearRange[1]}
-                                    direction={sortBy === yearRange[1] ? sortOrder: 'asc'}
+                                    direction={sortBy === yearRange[1] ? sortOrder : 'asc'}
                                 >
                                     {`${yearRange[1]} (%)`}
                                 </TableSortLabel>

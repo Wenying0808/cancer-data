@@ -457,7 +457,19 @@ const Section4 = ({id, isActive}) => {
                         )
                         : selectedTabOption === "map" 
                             ? (
-                                <Select sx={{width: "250px"}} value={selectedCountryOrRegion} onChange={handleCountryOrRegionChange}>
+                                <Select 
+                                    sx={{width: "250px"}} 
+                                    value={selectedCountryOrRegion} 
+                                    onChange={handleCountryOrRegionChange}
+                                    MenuProps={{
+                                        PaperProps: {
+                                            style: {
+                                            maxHeight: 440, // Set maximum height for the dropdown
+                                            width: 250,
+                                            },
+                                        },
+                                    }}
+                                >
                                     {Object.keys(burdenDataByCountry).map((item) => (
                                             <MenuItem key={item} value={item}>
                                                 {item}

@@ -429,7 +429,19 @@ const Section3 = ({id, isActive}) => {
                             </Select> 
                         )
                         : (
-                            <Select sx={{width: "250px"}} value={selectedCountryOrRegion} onChange={handleCountryOrRegionChange}>
+                            <Select 
+                                sx={{width: "250px"}} 
+                                value={selectedCountryOrRegion} 
+                                onChange={handleCountryOrRegionChange}
+                                MenuProps={{
+                                    PaperProps: {
+                                        style: {
+                                        maxHeight: 440, // Set maximum height for the dropdown
+                                        width: 250,
+                                        },
+                                    },
+                                }}
+                            >
                                 {Object.keys(ageGroupDataByCountry).map((item) => (
                                         <MenuItem key={item} value={item}>
                                             {item}

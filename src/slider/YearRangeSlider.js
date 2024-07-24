@@ -20,7 +20,7 @@ const CustomSlider = styled(Slider)({
       borderRadius: 4,
     },
     '& .MuiSlider-rail': {
-      color: '#4758DC',
+      color: '#BBBCBE',
       height: 8,
       borderRadius: 4,
     },

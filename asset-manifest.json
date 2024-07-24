@@ -1,0 +1,19 @@
+{
+  "files": {
+    "main.css": "/cancer-data/static/css/main.9b9437a2.css",
+    "main.js": "/cancer-data/static/js/main.f001da42.js",
+    "static/js/453.94915eab.chunk.js": "/cancer-data/static/js/453.94915eab.chunk.js",
+    "static/media/section2data.csv": "/cancer-data/static/media/section2data.a903fdf5c9dffe8ca1fa.csv",
+    "static/media/section3data.csv": "/cancer-data/static/media/section3data.0f9fb8b332acfd485f07.csv",
+    "static/media/section1data.csv": "/cancer-data/static/media/section1data.0170978935cc7e3948c1.csv",
+    "static/media/section4data.csv": "/cancer-data/static/media/section4data.22cda0047b0ea46e4f0a.csv",
+    "index.html": "/cancer-data/index.html",
+    "main.9b9437a2.css.map": "/cancer-data/static/css/main.9b9437a2.css.map",
+    "main.f001da42.js.map": "/cancer-data/static/js/main.f001da42.js.map",
+    "453.94915eab.chunk.js.map": "/cancer-data/static/js/453.94915eab.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.9b9437a2.css",
+    "static/js/main.f001da42.js"
+  ]
+}

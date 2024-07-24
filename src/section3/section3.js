@@ -418,7 +418,11 @@ const Section3 = ({id, isActive}) => {
                 <FormControl size="small">
                     {selectedTabOption === "table" 
                         ? (
-                            <Select sx={{width: "150px"}} value={selectedContinent} onChange={handleContinentChange}>
+                            <Select 
+                                sx={{width: "150px"}}
+                                value={selectedContinent} 
+                                onChange={handleContinentChange}
+                            >
                                 <MenuItem value="World">World</MenuItem>
                                 <MenuItem value="Africa">Africa</MenuItem>
                                 <MenuItem value="North America">North America</MenuItem>
